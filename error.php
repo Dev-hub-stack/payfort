@@ -24,6 +24,6 @@
             <?php } ?>
 
             <section class="actions">
-                <a class="btm" href="http://localhost:4200">New Order</a>
+                <a class="btm" href="https://payment.ahmadhassan.design">New Order</a>
             </section>
 <?php include('footer.php') ?>
