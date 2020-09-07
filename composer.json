@@ -1,0 +1,12 @@
+{
+    "name": "rameez/payfort-payment",
+    "authors": [
+        {
+            "name": "Rameez Raja",
+            "email": "rajaunleashed@gmail.com"
+        }
+    ],
+    "require": {
+        "guzzlehttp/guzzle": "^7.0"
+    }
+}
