@@ -1,3 +1,7 @@
+<?php
+ini_set('display_errors', 1);
+error_reporting(E_ALL);
+?>
 <?php include('header.php') ?>
 <?php
 require_once 'PayfortIntegration.php';
