@@ -68,7 +68,7 @@ class PayfortIntegration
     /**
      * @var boolean for live account change it to false
      */
-    public $sandboxMode        = true;
+    public $sandboxMode        = SANDBOX_MODE;
     /**
      * @var string  project root folder
      * change it if the project is not on root folder.
