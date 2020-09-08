@@ -91,7 +91,7 @@ $totalAmount = $amount;
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
-            <li>
+           <!-- <li>
                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
                 <label class="payment-option active" for="po_creditcard">
                     <img src="assets/img/cc.png" alt="">
@@ -102,19 +102,19 @@ $totalAmount = $amount;
                     </div>
 
                 </label>
-            </li>
-<!--            <li>
+            </li>-->
+            <li>
                 <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage" style="display: none">
                 <label class="payment-option" for="po_cc_merchantpage">
                     <img src="assets/img/cc.png" alt="">
                     <span class="name">Pay with credit cards</span>
                     <em class="seperator hidden"></em>
-                    <div class="demo-container hidden">
+                    <div class="demo-container hidden"> <!--  Area for the iframe section -->
                         <iframe src="" frameborder="0"></iframe>
                     </div>
 
                 </label>
-            </li>-->
+            </li>
             <!--<li>
                 <input id="po_cc_merchantpage2" type="radio" name="payment_option" value="cc_merchantpage2"  style="display: none">
                 <label class="payment-option" for="po_cc_merchantpage2">
