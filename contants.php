@@ -13,6 +13,6 @@ define('WEB_URL', 'http://localhost:4200');
 
 //DB Credentials
 define('HOST', 'localhost');
-define('DB', 'tuner_stop');
+define('DB', 'tuner');
 define('USER', 'root');
-define('PASSWORD', '4slash1234');
+define('PASSWORD', 'kePFut#3!0Lux$');
