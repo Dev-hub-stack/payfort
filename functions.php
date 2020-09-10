@@ -11,7 +11,6 @@ if($conn->connect_errno) {
 
 
 function getCart($session_id) {
-    $session_id = $_GET['session_id'];
     global $conn;
     $query = $conn->query('Select * from cart where session_id = "' . $session_id . '"');
 
@@ -22,6 +21,14 @@ function getCart($session_id) {
     }
 }
 
+
+function getUserEmail($session_id) {
+    global $conn;
+    $query = $conn->query('SELECT billing.email, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.session_id = "' . $session_id . '"');
+    if($row = $query->fetch_assoc()) {
+        return $row['email'];
+    }
+}
 
 function setCartItems($cart_id) {
     global $conn;
@@ -55,16 +62,11 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
+    session_start();
     $session_id = $_SESSION['session_id'];
-    echo $session_id;
-    exit;
     global $conn;
     $orderQuery = $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '"');
-    if(!$orderQuery) {
-        $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '"');
-        return false;
-    }
-
+    $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '"');
     return true;
 }
 

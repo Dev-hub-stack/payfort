@@ -9,8 +9,10 @@ require_once 'functions.php';
 $objFort = new PayfortIntegration();
 $session_id = NULL;
 if(isset($_GET['session_id'])) {
+    session_start();
     $cart = getCart($_GET['session_id']);
     $session_id = $_GET['session_id'];
+    $objFort->customerEmail = getUserEmail($_GET['session_id']);
     $objFort->session_id = $session_id;
     $_SESSION['session_id'] = $session_id;
     if(is_null($cart)) {

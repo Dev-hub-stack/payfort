@@ -56,7 +56,7 @@ class PayfortIntegration
     /**
      * @var string item name
      */
-    public $itemName           = 'Apple iPhone 6s Plus';
+    public $itemName           = 'Wheel Rim';
 
     public $items = NULL;
     
@@ -75,13 +75,8 @@ class PayfortIntegration
      */
     public $projectUrlPath     = BASE_PATH;
 
-    public $session_id = 'icajO8s8zzOq838';
-    
     public function __construct()
     {
-        if(isset($_GET['session_id'])) {
-            $this->session_id = $_GET['session_id'];
-        }
     }
 
     public function processRequest($paymentMethod)
@@ -123,7 +118,7 @@ class PayfortIntegration
             //'customer_name'         => trim($order_info['b_firstname'].' '.$order_info['b_lastname']),
             'command'             => $this->command,
             'language'            => $this->language,
-            'return_url'          => $this->getUrl('route.php?r=processResponse&session_id=' . $this->session_id),
+            'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
 
         if ($paymentMethod == 'sadad') {
@@ -375,7 +370,7 @@ class PayfortIntegration
             'customer_name'       => 'John Doe',
             'token_name'          => $fortParams['token_name'],
             'language'            => $this->language,
-            'return_url'          => $this->getUrl('route.php?r=processResponse&session_id=' . $this->session_id),
+            'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
         
         if(!empty($merchantPageData['paymentMethod']) && $merchantPageData['paymentMethod'] == 'installments_merchantpage'){

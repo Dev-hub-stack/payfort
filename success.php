@@ -27,7 +27,7 @@ if(!confirm_order()) {
 
     <div class="h-seperator"></div>
     
-    <section class="details">
+    <!--<section class="details">
         <h3>Response Details</h3>
         <br/>
         <table>
@@ -40,7 +40,7 @@ if(!confirm_order()) {
                 </th>
             </tr>
         </table>
-    </section>
+    </section>-->
     
     <div class="h-seperator"></div>
     
