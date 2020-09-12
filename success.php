@@ -4,6 +4,9 @@ require_once 'functions.php';
 if(!confirm_order()) {
     echo 'Order Processing failed, Please contact administrator';
     exit;
+} else {
+    $orderId = getOrderId();
+    header('Location: ' . WEB_URL . '/thank-you?order_id=' . $orderId);
 }
 ?>
 <?php include('header.php') ?>

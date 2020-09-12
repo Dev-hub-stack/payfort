@@ -10,9 +10,9 @@ if($conn->connect_errno) {
 }
 
 
-function getCart($session_id) {
+function getCart($session_id, $order_number) {
     global $conn;
-    $query = $conn->query('Select * from cart where session_id = "' . $session_id . '"');
+    $query = $conn->query('Select * from cart where session_id = "' . $session_id . '" AND order_number ="' . $order_number. '"');
 
     if ($row = $query->fetch_assoc()) {
         return $row;
@@ -62,12 +62,26 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
+    try {
+        session_start();
+        $session_id = $_SESSION['session_id'];
+        $order_number = $_SESSION['order_number'];
+        global $conn;
+        $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        return true;
+    } catch (Exception $ex) {
+        return false;
+    }
+}
+
+function getOrderId() {
     session_start();
     $session_id = $_SESSION['session_id'];
     global $conn;
-    $orderQuery = $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '"');
-    $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '"');
-    return true;
+    $order = $conn->query('SELECT id FROM orders where session_id ="' . $session_id . '"');
+    $row = $order->fetch_assoc();
+    return $row['id'];
 }
 
 

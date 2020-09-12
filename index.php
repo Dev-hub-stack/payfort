@@ -8,13 +8,14 @@ require_once 'PayfortIntegration.php';
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
 $session_id = NULL;
-if(isset($_GET['session_id'])) {
+if(isset($_GET['session_id']) && $_GET['order_number']) {
     session_start();
-    $cart = getCart($_GET['session_id']);
+    $cart = getCart($_GET['session_id'], $_GET['order_number']);
     $session_id = $_GET['session_id'];
     $objFort->customerEmail = getUserEmail($_GET['session_id']);
     $objFort->session_id = $session_id;
     $_SESSION['session_id'] = $session_id;
+    $_SESSION['order_number'] = $_GET['order_number'];
     if(is_null($cart)) {
         echo 'Cart not found';
         exit;

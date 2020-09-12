@@ -238,6 +238,7 @@ class PayfortIntegration
         }
         else{
             $return_url = $this->getUrl('success.php?'.http_build_query($params));
+//            $return_url = WEB_URL . '/thank-you';
         }
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
         exit;

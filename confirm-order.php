@@ -9,7 +9,8 @@ $objFort = new PayfortIntegration();
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
 if(isset($_GET['session_id'])) {
-    $cart = getCart($_GET['session_id']);
+    session_start();
+    $cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
     $objFort->session_id = $_GET['session_id'];
     if(is_null($cart)) {
         echo 'Cart not found';
