@@ -2,8 +2,7 @@
 require_once 'contants.php';
 require_once 'functions.php';
 if(!confirm_order()) {
-    echo 'Order Processing failed, Please contact administrator';
-    exit;
+    header('Location: ' . WEB_URL . '/cancel-order');
 } else {
     $orderId = getOrderId();
     header('Location: ' . WEB_URL . '/thank-you?order_id=' . $orderId);

@@ -1,3 +1,7 @@
+<?php
+    header('Location: ' . WEB_URL . '/cancel-order');
+?>
+
 <?php include('header.php') ?>
 
             <section class="nav">
