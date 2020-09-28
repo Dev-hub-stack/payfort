@@ -11,9 +11,14 @@
         <!--<link rel="stylesheet" href="assets/css/style2.css">-->
     </head>
     <body>
-        <header>
-            <div class="logo">
-                <img src="assets/img/logo.png" alt="">
+        <header style="height: auto; background: none; border-bottom: 2px solid #000">
+            <div style="padding:10px; text-align: center; font-size: 24px;">
+
+                <h3>
+                    <a href="https://wheel.ahmadhassan.design/">
+                        <img src="https://wheel.ahmadhassan.design/assets/img/logo.png" />
+                    </a>
+                </h3>
             </div>
         </header>
         <div class="wrapper">
