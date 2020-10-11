@@ -21,7 +21,7 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
         exit;
     }
 
-    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
+    $objFort->amount = $cart['total'] + $cart['vat'] + $cart['shipping'] - $cart['discount'];
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 }
@@ -68,6 +68,11 @@ $totalAmount = $amount;
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
                                     Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>VAT: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['vat']); ?></strong>
                             </td>
                         </tr>
                         <tr>

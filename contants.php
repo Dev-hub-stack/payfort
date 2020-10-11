@@ -1,7 +1,7 @@
 <?php
 
-//define('BASE_PATH', '/payfort-payment');
-define('BASE_PATH', '/');
+define('BASE_PATH', '/payfort-payment');
+//define('BASE_PATH', '/');
 define('GATEWAY_HOST', 'https://checkout.payfort.com/');
 define('GATEWAY_SANDBOX_HOST', 'https://sbcheckout.payfort.com/');
 define('MERCHANT_IDENTIFIER', 'ceef86d7');
@@ -15,8 +15,8 @@ define('WEB_URL', 'https://wheel.ahmadhassan.design/');
 
 //DB Credentials
 define('HOST', 'localhost');
-define('DB', 'tuner');
-//define('DB', 'tuner_stop');
+//define('DB', 'tuner');
+define('DB', 'tuner_stop');
 define('USER', 'root');
-define('PASSWORD', 'kePFut#3!0Lux$');
-//define('PASSWORD', '4slash1234');
+//define('PASSWORD', 'kePFut#3!0Lux$');
+define('PASSWORD', '4slash1234');
