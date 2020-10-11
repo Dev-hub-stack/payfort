@@ -1,5 +1,6 @@
 <?php
 
+//define('BASE_PATH', '/payfort-payment');
 define('BASE_PATH', '/');
 define('GATEWAY_HOST', 'https://checkout.payfort.com/');
 define('GATEWAY_SANDBOX_HOST', 'https://sbcheckout.payfort.com/');
@@ -10,6 +11,7 @@ define('PAYFORT_SHA_RESPONSE_PHRASE', '$2y$10$RF7WRs3TN');
 define('CURRENCY', 'AED');
 define('SANDBOX_MODE', true);
 define('WEB_URL', 'https://wheel.ahmadhassan.design/');
+//define('WEB_URL', 'http://localhost:4200/');
 
 //DB Credentials
 define('HOST', 'localhost');

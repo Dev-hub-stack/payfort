@@ -8,7 +8,7 @@ require_once 'PayfortIntegration.php';
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
 $session_id = NULL;
-if(isset($_GET['session_id']) && $_GET['order_number']) {
+if (isset($_GET['session_id']) && $_GET['order_number']) {
     session_start();
     $cart = getCart($_GET['session_id'], $_GET['order_number']);
     $session_id = $_GET['session_id'];
@@ -16,16 +16,16 @@ if(isset($_GET['session_id']) && $_GET['order_number']) {
     $objFort->session_id = $session_id;
     $_SESSION['session_id'] = $session_id;
     $_SESSION['order_number'] = $_GET['order_number'];
-    if(is_null($cart)) {
+    if (is_null($cart)) {
         echo 'Cart not found';
         exit;
     }
 
-    $objFort->amount = $cart['total'];
+    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 }
-$amount =  $objFort->amount;
+$amount = $objFort->amount;
 $currency = $objFort->currency;
 $totalAmount = $amount;
 ?>
@@ -45,8 +45,8 @@ $totalAmount = $amount;
             </span>
             <li>
                 <?php
-                    if(isset($objFort->items)) :
-                ?>
+                if (isset($objFort->items)) :
+                    ?>
 
                     <table>
                         <tr>
@@ -55,24 +55,49 @@ $totalAmount = $amount;
                             <th>Price</th>
                         </tr>
                         <?php
-                            foreach($objFort->items as $item) :
-                        ?>
-                        <tr>
-                            <td><?= $item->item_description; ?><br>
-                            SKU: <?= $item->item_sku; ?></td>
-                            <td><?= $item->item_quantity; ?></td>
-                            <td><?= $objFort->currency . ' ' .$item->item_price; ?></td>
-                        </tr>
+                        foreach ($objFort->items as $item) :
+                            ?>
+                            <tr>
+                                <td><?= $item->item_description; ?><br>
+                                    SKU: <?= $item->item_sku; ?></td>
+                                <td><?= $item->item_quantity; ?></td>
+                                <td><?= $objFort->currency . ' ' . $item->item_price; ?></td>
+                            </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td colspan="3"><strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f",$totalAmount);?></strong></td>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Sub
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Shipping: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['shipping']); ?></strong>
+                            </td>
+                        </tr>
+                        <?php
+                        if ($cart['discount'] > 0) {
+                            ?>
+                            <tr>
+                                <td colspan="3" style="text-align: right">
+
+                                    <strong>Discount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['discount']); ?></strong>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                            </td>
                         </tr>
                     </table>
                 <?php endif; ?>
             </li>
             <!-- <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. A ex magni delectus aliquam debitis</li> -->
         </ul>
-       <!-- <ul>
+        <!-- <ul>
             <li>
                 <div class="v-seperator"></div>
             </li>
@@ -83,7 +108,7 @@ $totalAmount = $amount;
                 <label class="lead" for="">price</label>
             </span>
 
-            <li><span class="curreny">$</span> <?php /*echo sprintf("%.2f",$totalAmount);*/?>	</li>
+            <li><span class="curreny">$</span> <?php /*echo sprintf("%.2f",$totalAmount);*/ ?>	</li>
         </ul>-->
     </section>
 
@@ -94,20 +119,21 @@ $totalAmount = $amount;
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
-           <!-- <li>
-                <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
-                <label class="payment-option active" for="po_creditcard">
-                    <img src="assets/img/cc.png" alt="">
-                    <span class="name">Pay with credit cards</span>
-                    <em class="seperator hidden"></em>
-                    <div class="demo-container hidden">
-                        <iframe src="" frameborder="0"></iframe>
-                    </div>
+            <!-- <li>
+                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
+                 <label class="payment-option active" for="po_creditcard">
+                     <img src="assets/img/cc.png" alt="">
+                     <span class="name">Pay with credit cards</span>
+                     <em class="seperator hidden"></em>
+                     <div class="demo-container hidden">
+                         <iframe src="" frameborder="0"></iframe>
+                     </div>
 
-                </label>
-            </li>-->
+                 </label>
+             </li>-->
             <li>
-                <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage" style="display: none">
+                <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage"
+                       style="display: none">
                 <label class="payment-option" for="po_cc_merchantpage">
                     <img src="assets/img/cc.png" alt="">
                     <span class="name">Pay with credit cards</span>
@@ -162,20 +188,20 @@ $totalAmount = $amount;
                                     <div class="col-xs-3">
                                         <select class="form-control" name="expiry_year" id="payfort_fort_mp2_expiry_year">
                                             <?php
-/*                                            $today = getdate();
-                                            $year_expire = array();
-                                            for ($i = $today['year']; $i < $today['year'] + 11; $i++) {
-                                                    $year_expire[] = array(
-                                                            'text'  => strftime('%Y', mktime(0, 0, 0, 1, 1, $i)),
-                                                            'value' => strftime('%y', mktime(0, 0, 0, 1, 1, $i)) 
-                                                    );
-                                            }
-                                            */?>
+            /*                                            $today = getdate();
+                                                        $year_expire = array();
+                                                        for ($i = $today['year']; $i < $today['year'] + 11; $i++) {
+                                                                $year_expire[] = array(
+                                                                        'text'  => strftime('%Y', mktime(0, 0, 0, 1, 1, $i)),
+                                                                        'value' => strftime('%y', mktime(0, 0, 0, 1, 1, $i))
+                                                                );
+                                                        }
+                                                        */ ?>
                                             <?php
-/*                                            foreach($year_expire  as $year) {
-                                                echo "<option value={$year['value']}>{$year['text']}</option>";
-                                            }
-                                            */?>
+            /*                                            foreach($year_expire  as $year) {
+                                                            echo "<option value={$year['value']}>{$year['text']}</option>";
+                                                        }
+                                                        */ ?>
                                         </select>
                                     </div>
                                 </div>
@@ -191,16 +217,17 @@ $totalAmount = $amount;
                 </div>
             </li>-->
 
-          <!--  <li>
-                <input id="po_installments" type="radio" name="payment_option" value="installments" style="display: none">
-                <label class="payment-option" for="po_installments">
-                    <img src="assets/img/installment.png" alt="">
-                    <span class="name"> Pay with installments (Redirection)</span>
-                    <em class="seperator hidden"></em>
-                </label>
-            </li>-->
+            <!--  <li>
+                  <input id="po_installments" type="radio" name="payment_option" value="installments" style="display: none">
+                  <label class="payment-option" for="po_installments">
+                      <img src="assets/img/installment.png" alt="">
+                      <span class="name"> Pay with installments (Redirection)</span>
+                      <em class="seperator hidden"></em>
+                  </label>
+              </li>-->
             <li>
-                <input id="po_installments_merchantpage" type="radio" name="payment_option" value="installments_merchantpage" style="display: none">
+                <input id="po_installments_merchantpage" type="radio" name="payment_option"
+                       value="installments_merchantpage" style="display: none">
                 <label class="payment-option" for="po_installments_merchantpage">
                     <img src="assets/img/installment.png" alt="">
                     <span class="name"> Pay with installments</span>
@@ -208,22 +235,22 @@ $totalAmount = $amount;
                 </label>
             </li>
 
-<!--            <li>-->
-<!--                <input id="po_naps" type="radio" name="payment_option" value="naps" style="display: none">-->
-<!--                <label class="payment-option" for="po_naps">-->
-<!--                    <img src="assets/img/naps.png" alt="">-->
-<!--                    <span class="name">Pay with NAPS</span>-->
-<!--                    <em class="seperator hidden"></em>-->
-<!--                </label>-->
-<!--            </li>-->
-<!--            <li>-->
-<!--                <input id="po_sadad" type="radio" name="payment_option" value="sadad" style="display: none">-->
-<!--                <label class="payment-option" for="po_sadad">-->
-<!--                    <img src="assets/img/sadaad.png" alt="">-->
-<!--                    <span class="name">Pay with SADAD</span>-->
-<!--                    <em class="seperator hidden"></em>-->
-<!--                </label>-->
-<!--            </li>-->
+            <!--            <li>-->
+            <!--                <input id="po_naps" type="radio" name="payment_option" value="naps" style="display: none">-->
+            <!--                <label class="payment-option" for="po_naps">-->
+            <!--                    <img src="assets/img/naps.png" alt="">-->
+            <!--                    <span class="name">Pay with NAPS</span>-->
+            <!--                    <em class="seperator hidden"></em>-->
+            <!--                </label>-->
+            <!--            </li>-->
+            <!--            <li>-->
+            <!--                <input id="po_sadad" type="radio" name="payment_option" value="sadad" style="display: none">-->
+            <!--                <label class="payment-option" for="po_sadad">-->
+            <!--                    <img src="assets/img/sadaad.png" alt="">-->
+            <!--                    <span class="name">Pay with SADAD</span>-->
+            <!--                    <em class="seperator hidden"></em>-->
+            <!--                </label>-->
+            <!--            </li>-->
         </ul>
     </section>
 
@@ -234,43 +261,41 @@ $totalAmount = $amount;
         <a class="continue" id="btn_continue" href="javascript:void(0)">Continue</a>
     </section>
     <script type="text/javascript" src="vendors/jquery.min.js"></script>
-        <script type="text/javascript" src="assets/js/jquery.creditCardValidator.js"></script>
-        <script type="text/javascript" src="assets/js/checkout.js"></script>
-        <script type="text/javascript">
-            $(document).ready(function () {
-                $('input:radio[name=payment_option]').click(function () {
-                    $('input:radio[name=payment_option]').each(function () {
-                        if ($(this).is(':checked')) {
-                            $(this).addClass('active');
-                            $(this).parent('li').children('label').css('font-weight', 'bold');
-                            $(this).parent('li').children('div.details').show();
-                        }
-                        else {
-                            $(this).removeClass('active');
-                            $(this).parent('li').children('label').css('font-weight', 'normal');
-                            $(this).parent('li').children('div.details').hide();
-                        }
-                    });
-                });
-                $('#btn_continue').click(function () {
-                    var paymentMethod = $('input:radio[name=payment_option]:checked').val();
-                    if(paymentMethod == '' || paymentMethod === undefined || paymentMethod === null) {
-                        alert('Pelase Select Payment Method!');
-                        return;
-                    }
-                    if(paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                        window.location.href = 'confirm-order.php?payment_method='+paymentMethod+'&session_id=<?= $session_id; ?>'
-                    }
-                    if(paymentMethod == 'cc_merchantpage2') {
-                        var isValid = payfortFortMerchantPage2.validateCcForm();
-                        if(isValid) {
-                            getPaymentPage(paymentMethod);
-                        }
-                    }
-                    else{
-                        getPaymentPage(paymentMethod);
+    <script type="text/javascript" src="assets/js/jquery.creditCardValidator.js"></script>
+    <script type="text/javascript" src="assets/js/checkout.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('input:radio[name=payment_option]').click(function () {
+                $('input:radio[name=payment_option]').each(function () {
+                    if ($(this).is(':checked')) {
+                        $(this).addClass('active');
+                        $(this).parent('li').children('label').css('font-weight', 'bold');
+                        $(this).parent('li').children('div.details').show();
+                    } else {
+                        $(this).removeClass('active');
+                        $(this).parent('li').children('label').css('font-weight', 'normal');
+                        $(this).parent('li').children('div.details').hide();
                     }
                 });
             });
-        </script>
+            $('#btn_continue').click(function () {
+                var paymentMethod = $('input:radio[name=payment_option]:checked').val();
+                if (paymentMethod == '' || paymentMethod === undefined || paymentMethod === null) {
+                    alert('Pelase Select Payment Method!');
+                    return;
+                }
+                if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&session_id=<?= $session_id; ?>'
+                }
+                if (paymentMethod == 'cc_merchantpage2') {
+                    var isValid = payfortFortMerchantPage2.validateCcForm();
+                    if (isValid) {
+                        getPaymentPage(paymentMethod);
+                    }
+                } else {
+                    getPaymentPage(paymentMethod);
+                }
+            });
+        });
+    </script>
 <?php include('footer.php') ?>

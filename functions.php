@@ -77,9 +77,9 @@ function confirm_order() {
 
 function getOrderId() {
     session_start();
-    $session_id = $_SESSION['session_id'];
+    $order_number = $_SESSION['order_number'];
     global $conn;
-    $order = $conn->query('SELECT id FROM orders where session_id ="' . $session_id . '"');
+    $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
     $row = $order->fetch_assoc();
     return $row['id'];
 }

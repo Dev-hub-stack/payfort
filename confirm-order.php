@@ -17,7 +17,7 @@ if(isset($_GET['session_id'])) {
         exit;
     }
 
-    $objFort->amount = $cart['total'];
+    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 }
@@ -65,7 +65,32 @@ $paymentMethod = $_REQUEST['payment_method'];
                             </tr>
                         <?php endforeach; ?>
                         <tr>
-                            <td colspan="3"><strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f",$totalAmount);?></strong></td>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Sub
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Shipping: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['shipping']); ?></strong>
+                            </td>
+                        </tr>
+                        <?php
+                        if ($cart['discount'] > 0) {
+                            ?>
+                            <tr>
+                                <td colspan="3" style="text-align: right">
+
+                                    <strong>Discount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['discount']); ?></strong>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                        ?>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                            </td>
                         </tr>
                     </table>
                 <?php endif; ?>
