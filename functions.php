@@ -1,6 +1,6 @@
 <?php
 
-require_once './vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -12,7 +12,6 @@ if($conn->connect_errno) {
     exit;
 }
 
-
 function getCart($session_id, $order_number) {
     global $conn;
     $query = $conn->query('Select * from cart where session_id = "' . $session_id . '" AND order_number ="' . $order_number. '"');
@@ -23,7 +22,6 @@ function getCart($session_id, $order_number) {
         return null;
     }
 }
-
 
 function getUserEmail($session_id) {
     global $conn;
