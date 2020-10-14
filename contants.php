@@ -17,8 +17,8 @@ define('API_URL', 'https://ahmadhassan.design/api');
 
 //DB Credentials
 define('HOST', 'localhost');
-define('DB', 'tuner');
-//define('DB', 'tuner_stop');
 define('USER', 'root');
+define('DB', 'tuner');
 define('PASSWORD', 'kePFut#3!0Lux$');
+//define('DB', 'tuner_stop');
 //define('PASSWORD', '4slash1234');

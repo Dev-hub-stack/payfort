@@ -17,7 +17,7 @@ if(isset($_GET['session_id'])) {
         exit;
     }
 
-    $objFort->amount = $cart['total'] + $cart['vat'] + $cart['shipping'] - $cart['discount'];
+    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 }
