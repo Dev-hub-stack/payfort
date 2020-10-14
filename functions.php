@@ -1,4 +1,7 @@
 <?php
+
+require_once 'vendor/autoload.php';
+
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
 
@@ -69,6 +72,7 @@ function confirm_order() {
         global $conn;
         $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
         return false;
@@ -84,4 +88,15 @@ function getOrderId() {
     return $row['id'];
 }
 
+function sendEmail($order_id) {
+    $client = new GuzzleHttp\Client();
+    $url = API_URL . '/send-order-email';
+    $response = $client->request('POST', $url, [
+        'form_params' => [
+            'order_id' => $order_id
+        ]
+    ]);
+
+   // var_dump($response->getBody());
+}
 
