@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/vendor/autoload.php';
+//require_once __DIR__ . '/vendor/autoload.php';
 
 ini_set('display_errors', 1);
 error_reporting(E_ALL);
@@ -87,14 +87,27 @@ function getOrderId() {
 }
 
 function sendEmail($order_id) {
-    $client = new GuzzleHttp\Client();
-    $url = API_URL . '/send-order-email';
-    $response = $client->request('POST', $url, [
-        'form_params' => [
-            'order_id' => $order_id
-        ]
-    ]);
 
-   // var_dump($response->getBody());
+    $url = API_URL . '/send-order-email';
+
+    $curl = curl_init();
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url . "?order_id=" . $order_id,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => "POST",
+    ));
+
+    $response = curl_exec($curl);
+
+    curl_close($curl);
+    echo $response;
+
+
+    // var_dump($response->getBody());
 }
 
