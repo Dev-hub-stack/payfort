@@ -47,6 +47,6 @@ if(!confirm_order()) {
     <div class="h-seperator"></div>
     
     <section class="actions">
-        <a class="btm" href="https://wheel.ahmadhassan.design">New Order</a>
+        <a class="btm" href="https://tunerstop.com">New Order</a>
     </section>
 <?php include('footer.php') ?>
