@@ -20,7 +20,7 @@
 
 <?php if (isset($_REQUEST['error_msg'])) { ?>
     <section>
-        <div class="error">error message : error_msg</div>
+        <div class="error">error message : <?= $_REQUEST['error_msg']; ?></div>
     </section>
     <div class="h-seperator"></div>
 
