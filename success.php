@@ -2,7 +2,9 @@
 require_once 'contants.php';
 require_once 'functions.php';
 if(!confirm_order()) {
-    header('Location: ' . WEB_URL . '/cancel-order');
+    //header('Location: ' . WEB_URL . '/cancel-order');
+    echo "<script>window.location.href='https://tunerstop.com/cancel-order';</script>";
+    exit;
 } else {
     $orderId = getOrderId();
     header('Location: ' . WEB_URL . '/thank-you?order_id=' . $orderId);
