@@ -1,7 +1,7 @@
 <?php
 
 //define('BASE_PATH', '/payfort-payment');
-define('BASE_PATH', 'https://payment.ahmadhassan.design');
+define('BASE_PATH', '');
 define('GATEWAY_HOST', 'https://checkout.payfort.com/');
 define('GATEWAY_SANDBOX_HOST', 'https://sbcheckout.payfort.com/');
 //define('MERCHANT_IDENTIFIER', 'ceef86d7');
