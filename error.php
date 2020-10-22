@@ -23,11 +23,5 @@
         <div class="error">error message : <?= $_REQUEST['error_msg']; ?></div>
     </section>
     <div class="h-seperator"></div>
-
-
 <?php } ?>
-
-<section class="actions">
-    <a class="btm" href="https://payment.ahmadhassan.design">New Order</a>
-</section>
 <?php include('footer.php') ?>
