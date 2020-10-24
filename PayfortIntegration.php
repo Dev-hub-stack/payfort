@@ -4,7 +4,7 @@
  * 
  */
 require './contants.php';
-
+require './functions.php';
 class PayfortIntegration
 {
 
