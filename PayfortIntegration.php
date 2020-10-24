@@ -97,6 +97,13 @@ class PayfortIntegration
     }
 
     public function getRedirectionData($paymentMethod) {
+
+        if(isset($_GET['session_id'])) {
+            session_start();
+            $cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
+            $this->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
+        }
+
         $merchantReference = $this->generateMerchantReference();
         if ($this->sandboxMode) {
             $gatewayUrl = $this->gatewaySandboxHost . 'FortAPI/paymentPage';
