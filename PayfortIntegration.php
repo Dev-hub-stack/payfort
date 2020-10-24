@@ -365,7 +365,8 @@ class PayfortIntegration
 
         session_start();
         $this->amount = $_SESSION['amount'];
-
+        echo $this->amount;
+        exit;
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
