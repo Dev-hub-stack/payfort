@@ -3,7 +3,6 @@
 /**
  * @copyright Copyright PayFort 2012-2016 
  */
-require './functions.php';
 
 if(!isset($_REQUEST['r'])) {
     echo 'Page Not Found!';
