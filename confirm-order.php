@@ -22,8 +22,6 @@ if(isset($_GET['session_id'])) {
     $objFort->items = $cartItems;
 }
 $amount =  $objFort->amount;
-echo ($amount);
-exit;
 $currency = $objFort->currency;
 $totalAmount = $amount;
 $paymentMethod = $_REQUEST['payment_method'];
