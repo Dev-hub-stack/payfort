@@ -3,6 +3,7 @@
 /**
  * @copyright Copyright PayFort 2012-2016 
  */
+require './functions.php';
 
 if(!isset($_REQUEST['r'])) {
     echo 'Page Not Found!';
@@ -10,6 +11,9 @@ if(!isset($_REQUEST['r'])) {
 }
 require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
+session_start();
+$cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
+$objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
 if($_REQUEST['r'] == 'getPaymentPage') {
     $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'));
 }
