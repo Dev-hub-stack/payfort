@@ -10,8 +10,6 @@ if(!isset($_REQUEST['r'])) {
 require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
 //$cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
-echo $objFort->amount;
-exit;
 //$objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
 if($_REQUEST['r'] == 'getPaymentPage') {
     $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'));
