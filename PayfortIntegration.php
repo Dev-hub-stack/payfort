@@ -295,6 +295,8 @@ class PayfortIntegration
                 else {
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
+                    var_dump($host2HostParams);
+                    exit;
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
                   //  $this->log($debugMsg);
                     if (!$host2HostParams) {
@@ -371,7 +373,7 @@ class PayfortIntegration
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => $this->amount == 1 ? 1.00 : $this->convertFortAmount($this->amount, $this->currency),
+            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
             'customer_name'       => 'John Doe',
