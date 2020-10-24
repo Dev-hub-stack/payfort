@@ -365,15 +365,13 @@ class PayfortIntegration
 
         session_start();
         $this->amount = $_SESSION['amount'];
-        echo $this->amount;
-        exit;
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
+            'amount'              => $this->amount == 1 ? 1.00 : $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
             'customer_name'       => 'John Doe',
