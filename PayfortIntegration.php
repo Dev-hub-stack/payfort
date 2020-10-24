@@ -295,6 +295,8 @@ class PayfortIntegration
                 else {
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
+                    echo var_dump($host2HostParams);
+                    exit;
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
                   //  $this->log($debugMsg);
                     if (!$host2HostParams) {
@@ -363,6 +365,8 @@ class PayfortIntegration
             $gatewayUrl = $this->gatewayHost . 'FortAPI/paymentPage';
         }
 
+        session_start();
+        $this->amount = $_SESSION['amount'];
 
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
@@ -494,7 +498,7 @@ class PayfortIntegration
         $new_amount = 0;
         $total = $amount;
         $decimalPoints    = $this->getCurrencyDecimalPoints($currencyCode);
-        $new_amount = round($total, $decimalPoints) * (pow(10, $decimalPoints));
+        $new_amount = round((float)$total, $decimalPoints) * (pow(10, $decimalPoints));
         return $new_amount;
     }
 
