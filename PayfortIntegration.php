@@ -360,8 +360,6 @@ class PayfortIntegration
             $gatewayUrl = $this->gatewayHost . 'FortAPI/paymentPage';
         }
 
-        session_start();
-        $this->amount = $_SESSION['amount'];
 
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
