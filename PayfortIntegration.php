@@ -295,8 +295,6 @@ class PayfortIntegration
                 else {
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
-                    echo var_dump($host2HostParams);
-                    exit;
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
                   //  $this->log($debugMsg);
                     if (!$host2HostParams) {
