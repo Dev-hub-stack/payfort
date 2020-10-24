@@ -360,13 +360,15 @@ class PayfortIntegration
             $gatewayUrl = $this->gatewayHost . 'FortAPI/paymentPage';
         }
 
+        $this->amount = $_SESSION['amount'];
+
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => 1,
+            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
             'customer_name'       => 'John Doe',
