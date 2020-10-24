@@ -76,6 +76,9 @@ class PayfortIntegration
 
     public function __construct()
     {
+        if(isset($_SESSION['amount'])) {
+            $this->amount = $_SESSION['amount'];
+        }
     }
 
     public function processRequest($paymentMethod)
