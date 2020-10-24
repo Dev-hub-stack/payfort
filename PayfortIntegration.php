@@ -371,7 +371,7 @@ class PayfortIntegration
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => $this->amount == 1 ? 100 : $this->convertFortAmount($this->amount, $this->currency),
+            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
             'customer_name'       => 'John Doe',
