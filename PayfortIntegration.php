@@ -122,6 +122,9 @@ class PayfortIntegration
             'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
 
+        var_dump($postData);
+        exit;
+
         if ($paymentMethod == 'sadad') {
             $postData['payment_option'] = 'SADAD';
         }
