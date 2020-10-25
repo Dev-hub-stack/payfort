@@ -21,11 +21,11 @@ define('API_URL', 'https://admin.tunerstop.com/api');
 
 //DB Credentials
 define('HOST', 'localhost');
-define('USER', 'root');
-define('DB', 'tuner');
-define('PASSWORD', 'kePFut#3!0Lux$');
-//define('USER', 'nexuswebstudio');
+//define('USER', 'root');
 //define('DB', 'tuner');
-//define('PASSWORD', 'S?h4eXK[H]Mf');
+//define('PASSWORD', 'kePFut#3!0Lux$');
+define('USER', 'nexuswebstudio');
+define('DB', 'tunerstop2020');
+define('PASSWORD', 'S?h4eXK[H]Mf');
 //define('DB', 'tuner_stop');
 //define('PASSWORD', '4slash1234');
