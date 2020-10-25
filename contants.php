@@ -15,7 +15,7 @@ define('PAYFORT_SHA_RESPONSE_PHRASE', '$2y$10$dr0uio8Ha');
 define('CURRENCY', 'AED');
 define('SANDBOX_MODE', false);
 define('WEB_URL', 'https://tunerstop.com/');
-define('API_URL', 'https://ahmadhassan.design/api');
+define('API_URL', 'https://admin.tunerstop.com/api');
 //define('API_URL', 'http://localhost:8000/api');
 //define('WEB_URL', 'http://localhost:4200/');
 

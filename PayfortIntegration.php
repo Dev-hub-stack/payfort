@@ -365,13 +365,14 @@ class PayfortIntegration
 
         session_start();
         $this->amount = $_SESSION['amount'];
+        $this->amount = (string)$this->convertFortAmount($this->amount, $this->currency);
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
+            'amount'              => $this->amount,
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
             'customer_name'       => 'John Doe',
@@ -492,11 +493,10 @@ class PayfortIntegration
      */
     public function convertFortAmount($amount, $currencyCode)
     {
-        $new_amount = 0;
-        $total = $amount;
         $decimalPoints    = $this->getCurrencyDecimalPoints($currencyCode);
-        $new_amount = round((float)$total, $decimalPoints) * (pow(10, $decimalPoints));
-        return $new_amount;
+        $figureToMultiply = (pow(10, $decimalPoints));
+        $rounded = round($amount, $decimalPoints);
+        return  $rounded * $figureToMultiply;
     }
 
     public  function castAmountFromFort($amount, $currencyCode)
