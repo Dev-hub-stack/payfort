@@ -29,6 +29,7 @@ function getUserBilling($session_id) {
     if($row = $query->fetch_assoc()) {
         return $row;
     }
+    return '';
 }
 
 function setCartItems($cart_id) {
