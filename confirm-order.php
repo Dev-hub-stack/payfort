@@ -16,7 +16,10 @@ if(isset($_GET['session_id'])) {
         echo 'Cart not found';
         exit;
     }
-
+    $email = getUserEmail($_SESSION['session_id']);
+    if(!empty($email)){
+        $objFort->customerEmail = $email;
+    }
     $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
     $_SESSION['amount'] = $objFort->amount;
     $cartItems = setCartItems($cart['id']);

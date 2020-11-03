@@ -29,6 +29,7 @@ function getUserEmail($session_id) {
     if($row = $query->fetch_assoc()) {
         return $row['email'];
     }
+    return '';
 }
 
 function setCartItems($cart_id) {
