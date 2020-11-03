@@ -14,7 +14,10 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
     session_start();
     $cart = getCart($_GET['session_id'], $_GET['order_number']);
     $session_id = $_GET['session_id'];
-    $objFort->customerEmail = getUserEmail($_GET['session_id']);
+    $billingDetail = getUserBilling($_GET['session_id']);
+    $objFort->customerEmail = $billingDetail['email'];
+    $_SESSION['email'] = $objFort->customerEmail;
+    $_SESSION['name'] = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
     $objFort->session_id = $session_id;
     $_SESSION['session_id'] = $session_id;
     $_SESSION['order_number'] = $_GET['order_number'];

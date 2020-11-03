@@ -366,6 +366,11 @@ class PayfortIntegration
         session_start();
         $this->amount = $_SESSION['amount'];
         $this->amount = (string)$this->convertFortAmount($this->amount, $this->currency);
+        $this->customerEmail = $_SESSION['email'];
+        $name = $_SESSION['name'];
+        unset($_SESSION['email']);
+        unset($_SESSION['amount']);
+        unset($_SESSION['name']);
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
@@ -375,7 +380,7 @@ class PayfortIntegration
             'amount'              => $this->amount,
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
-            'customer_name'       => 'John Doe',
+            'customer_name'       => $name,
             'token_name'          => $fortParams['token_name'],
             'language'            => $this->language,
             'return_url'          => $this->getUrl('route.php?r=processResponse'),

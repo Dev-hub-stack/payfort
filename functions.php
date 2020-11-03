@@ -23,11 +23,11 @@ function getCart($session_id, $order_number) {
     }
 }
 
-function getUserEmail($session_id) {
+function getUserBilling($session_id) {
     global $conn;
-    $query = $conn->query('SELECT billing.email, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.session_id = "' . $session_id . '"');
+    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.session_id = "' . $session_id . '"');
     if($row = $query->fetch_assoc()) {
-        return $row['email'];
+        return $row;
     }
 }
 
