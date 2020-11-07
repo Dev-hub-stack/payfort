@@ -12,9 +12,9 @@ if($conn->connect_errno) {
     exit;
 }
 
-function getCart($session_id, $order_number) {
+function getCart($order_number) {
     global $conn;
-    $query = $conn->query('Select * from cart where session_id = "' . $session_id . '" AND order_number ="' . $order_number. '"');
+    $query = $conn->query('Select * from cart where order_number ="' . $order_number. '"');
 
     if ($row = $query->fetch_assoc()) {
         return $row;
@@ -23,9 +23,9 @@ function getCart($session_id, $order_number) {
     }
 }
 
-function getUserBilling($session_id) {
+function getUserBilling($order_number) {
     global $conn;
-    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.session_id = "' . $session_id . '"');
+    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.order_number = "' . $order_number . '"');
     if($row = $query->fetch_assoc()) {
         return $row;
     }
@@ -112,3 +112,15 @@ function sendEmail($order_id) {
     // var_dump($response->getBody());
 }
 
+
+function calculateTotalAmount($cart) {
+    $total = 0;
+
+    if ($cart['vat'] == 0) {
+        $total = $cart['sub_total'] + $cart['shipping'] - $cart['discount'];
+    } else {
+        $total = $cart['total'] + $cart['shipping'] - $cart['discount'];
+    }
+
+    return $total;
+}

@@ -12,9 +12,10 @@ $objFort = new PayfortIntegration();
 $session_id = NULL;
 if (isset($_GET['session_id']) && $_GET['order_number']) {
     session_start();
-    $cart = getCart($_GET['session_id'], $_GET['order_number']);
+    $cart = getCart($_GET['order_number']);
     $session_id = $_GET['session_id'];
-    $billingDetail = getUserBilling($_GET['session_id']);
+    $orderNumber = $_GET['order_number'];
+    $billingDetail = getUserBilling($_GET['order_number']);
     $objFort->customerEmail = $billingDetail['email'];
     $_SESSION['email'] = $objFort->customerEmail;
     $_SESSION['name'] = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
@@ -26,8 +27,8 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
         exit;
     }
 
-    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
-    $_SESSION['amount'] = $objFort->amount;
+    $objFort->amount = calculateTotalAmount($cart);
+    $_SESSION['amount'] = $objFort->convertFortAmount($objFort->amount, $objFort->currency);
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 }
@@ -73,7 +74,7 @@ $totalAmount = $amount;
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
-                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['sub_total']); ?></strong>
                             </td>
                         </tr>
                         <tr>
@@ -100,7 +101,7 @@ $totalAmount = $amount;
                         ?>
                         <tr>
                             <td colspan="3" style="text-align: right">
-                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
                     </table>
@@ -130,7 +131,7 @@ $totalAmount = $amount;
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
-            <!-- <li>
+             <li>
                  <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
                  <label class="payment-option active" for="po_creditcard">
                      <img src="assets/img/cc.png" alt="">
@@ -141,7 +142,7 @@ $totalAmount = $amount;
                      </div>
 
                  </label>
-             </li>-->
+             </li>
             <li>
                 <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage"
                        style="display: none">
@@ -296,15 +297,15 @@ $totalAmount = $amount;
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&session_id=<?= $session_id; ?>'
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>'
                 }
                 if (paymentMethod == 'cc_merchantpage2') {
                     var isValid = payfortFortMerchantPage2.validateCcForm();
                     if (isValid) {
-                        getPaymentPage(paymentMethod);
+                        getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
                     }
                 } else {
-                    getPaymentPage(paymentMethod);
+                    getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
                 }
             });
         });

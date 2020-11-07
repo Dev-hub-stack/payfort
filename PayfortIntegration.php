@@ -74,17 +74,16 @@ class PayfortIntegration
      */
     public $projectUrlPath     = BASE_PATH;
 
+    public $name = 'John';
+
     public function __construct()
     {
-        if(isset($_SESSION['amount'])) {
-            $this->amount = $_SESSION['amount'];
-        }
     }
 
-    public function processRequest($paymentMethod)
+    public function processRequest($paymentMethod, $order_number)
     {
         if ($paymentMethod == 'cc_merchantpage' || $paymentMethod == 'cc_merchantpage2' || $paymentMethod == 'installments_merchantpage') {
-            $merchantPageData = $this->getMerchantPageData($paymentMethod);
+            $merchantPageData = $this->getMerchantPageData($paymentMethod, $order_number);
             $postData = $merchantPageData['params'];
             $gatewayUrl = $merchantPageData['url'];
         }
@@ -142,10 +141,10 @@ class PayfortIntegration
         return array('url' => $gatewayUrl, 'params' => $postData);
     }
     
-    public function getMerchantPageData($paymentMethod)
+    public function getMerchantPageData($paymentMethod, $order_number = NULL)
     {
         $merchantReference = $this->generateMerchantReference();
-        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn');
+        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&order_number=' . $order_number);
         if(isset($_GET['3ds']) && $_GET['3ds'] == 'no') {
             $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&3ds=no');
         }
@@ -311,6 +310,7 @@ class PayfortIntegration
                         unset($params['signature']);
                         unset($params['integration_type']);
                         $calculatedSignature = $this->calculateSignature($params, 'response');
+
                         if ($responseSignature != $calculatedSignature) {
                             $success = false;
                             $reason  = 'Invalid signature.';
@@ -363,28 +363,21 @@ class PayfortIntegration
             $gatewayUrl = $this->gatewayHost . 'FortAPI/paymentPage';
         }
 
-        session_start();
-        $this->amount = $_SESSION['amount'];
-        $this->amount = (string)$this->convertFortAmount($this->amount, $this->currency);
-        $this->customerEmail = $_SESSION['email'];
-        $name = $_SESSION['name'];
-        unset($_SESSION['email']);
-        unset($_SESSION['amount']);
-        unset($_SESSION['name']);
         $postData      = array(
             'merchant_reference'  => $fortParams['merchant_reference'],
             'access_code'         => $this->accessCode,
             'command'             => $this->command,
             'merchant_identifier' => $this->merchantIdentifier,
             'customer_ip'         => $_SERVER['REMOTE_ADDR'],
-            'amount'              => $this->amount,
+            'amount'              => $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
-            'customer_name'       => $name,
+            'customer_name'       => $this->name,
             'token_name'          => $fortParams['token_name'],
             'language'            => $this->language,
             'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
+
         
         if(!empty($merchantPageData['paymentMethod']) && $merchantPageData['paymentMethod'] == 'installments_merchantpage'){
                 $postData['installments']            = 'YES';

@@ -9,11 +9,20 @@ if(!isset($_REQUEST['r'])) {
 }
 require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
+include './functions.php';
 
 if($_REQUEST['r'] == 'getPaymentPage') {
-    $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'));
+    $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'), $_REQUEST['order_number']);
 }
 elseif($_REQUEST['r'] == 'merchantPageReturn') {
+
+    $cart = getCart($_REQUEST['order_number']);
+    $billingDetail = getUserBilling($_REQUEST['order_number']);
+    $objFort->customerEmail = $billingDetail['email'];
+    $objFort->name = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
+    $objFort->amount = calculateTotalAmount($cart);
+
+    $objFort->orderNumber = $_REQUEST['order_number'];
     $objFort->processMerchantPageResponse();
 }
 elseif($_REQUEST['r'] == 'processResponse') {

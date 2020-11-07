@@ -10,17 +10,17 @@ require_once 'functions.php';
 $objFort = new PayfortIntegration();
 if(isset($_GET['session_id'])) {
     session_start();
-    $cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
+    $cart = getCart($_SESSION['order_number']);
     $objFort->session_id = $_GET['session_id'];
     if(is_null($cart)) {
         echo 'Cart not found';
         exit;
     }
-    $user = getUserBilling($_SESSION['session_id']);
+    $user = getUserBilling($_SESSION['order_number']);
     if(!empty($user)){
         $objFort->customerEmail = $user['email'];
     }
-    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
+    $objFort->amount = calculateTotalAmount($cart);
     $_SESSION['amount'] = $objFort->amount;
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
@@ -71,7 +71,7 @@ $paymentMethod = $_REQUEST['payment_method'];
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
-                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['sub_total']); ?></strong>
                             </td>
                         </tr>
                         <tr>
@@ -98,7 +98,7 @@ $paymentMethod = $_REQUEST['payment_method'];
                         ?>
                         <tr>
                             <td colspan="3" style="text-align: right">
-                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
                     </table>
@@ -118,9 +118,10 @@ $paymentMethod = $_REQUEST['payment_method'];
     <?php if($paymentMethod == 'cc_merchantpage' || $paymentMethod == 'installments_merchantpage') ://merchant page iframe method ?>
         <section class="merchant-page-iframe">
             <?php
-                $merchantPageData = $objFort->getMerchantPageData($paymentMethod);
+                $merchantPageData = $objFort->getMerchantPageData($paymentMethod, $_GET['order_number']);
                 $postData = $merchantPageData['params'];
                 $gatewayUrl = $merchantPageData['url'];
+
             ?>
             <div class="cc-iframe-display">
                 <div id="div-pf-iframe" style="display:none">
@@ -144,7 +145,7 @@ $paymentMethod = $_REQUEST['payment_method'];
             var paymentMethod = '<?php echo $paymentMethod?>';
             //load merchant page iframe
             if(paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                getPaymentPage(paymentMethod);
+                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
             }
         });
     </script>
