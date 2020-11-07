@@ -270,6 +270,7 @@ class PayfortIntegration
             unset($params['signature']);
             unset($params['integration_type']);
             unset($params['3ds']);
+            unset($params['order_number']);
             $merchantReference = $params['merchant_reference'];
             $calculatedSignature = $this->calculateSignature($params, 'response');
             $success       = true;
@@ -304,6 +305,7 @@ class PayfortIntegration
                     }
                     else {
                         $params    = $host2HostParams;
+                        
                         $responseSignature = $host2HostParams['signature'];
                         $merchantReference = $params['merchant_reference'];
                         unset($params['r']);
