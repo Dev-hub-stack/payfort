@@ -72,16 +72,32 @@ function confirm_order() {
     $card_number = $_GET['card_number'];
     $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
     $fort_id = $_GET['fort_id'];
+    $paymentType = $_SESSION['paymentType'];
+    $outstanding_amount = NULL;
+
+    if($paymentType == 'twenty_percent') {
+        $paid_amount = $_SESSION['amount'] * 0.2;
+        $outstanding_amount = $_SESSION['amount'] - $paid_amount;
+    } else {
+        $paid_amount = $_SESSION['amount'];
+    }
     try {
 
         $conn->query('UPDATE orders SET status = 1,
                                 payment_method = "'. $paymentMethod . '", 
                                 card_number = "'. $card_number .'", 
                                 card_holder = "'. $card_holder_name .'",
+                                payment_type = "'. $paymentType .'",
+                                paid_amount = '. $paid_amount .',
+                                outstanding_amount = '. $outstanding_amount .',
                                 fort_id = "'. $fort_id .'"
                     WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         sendEmail(getOrderId());
+        unset($_SESSION['paymentType']);
+        unset($_SESSION['amount']);
+        unset($_SESSION['order_number']);
+        unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
         return false;

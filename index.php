@@ -128,6 +128,28 @@ $totalAmount = $amount;
 
     <section class="payment-method">
         <label class="lead" for="">
+            Pay 20% and remaining amount on delivery.
+        </label>
+        <ul>
+        <li>
+            <input id="cash_on_delivery" type="checkbox" name="payment_option" value="cc_merchantpage"
+                   style="display: none">
+            <label class="payment-option" for="cash_on_delivery">
+                <span class="name">AED <?= $totalAmount * 0.2 ?> (20%)</span>
+                <em class="seperator hidden"></em>
+                <div class="demo-container hidden"> <!--  Area for the iframe section -->
+                    <iframe src="" frameborder="0"></iframe>
+                </div>
+
+            </label>
+        </li>
+        </ul>
+    </section>
+
+    <div class="h-seperator"></div>
+
+    <section class="payment-method">
+        <label class="lead" for="">
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
@@ -277,6 +299,8 @@ $totalAmount = $amount;
     <script type="text/javascript" src="assets/js/checkout.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+            let amount = '<?= $totalAmount; ?>;';
+            let paymentType = 'full';
             $('input:radio[name=payment_option]').click(function () {
                 $('input:radio[name=payment_option]').each(function () {
                     if ($(this).is(':checked')) {
@@ -291,22 +315,31 @@ $totalAmount = $amount;
                 });
             });
             $('#btn_continue').click(function () {
+
                 var paymentMethod = $('input:radio[name=payment_option]:checked').val();
+                if($('#cash_on_delivery').is(":checked")) {
+                    paymentType = 'twenty_percent';
+                }
                 if (paymentMethod == '' || paymentMethod === undefined || paymentMethod === null) {
                     alert('Pelase Select Payment Method!');
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>'
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType
                 }
+
                 if (paymentMethod == 'cc_merchantpage2') {
                     var isValid = payfortFortMerchantPage2.validateCcForm();
                     if (isValid) {
-                        getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                        getPaymentPage(paymentMethod, amount);
                     }
                 } else {
-                    getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                    getPaymentPage(paymentMethod, amount);
                 }
+            });
+
+            $('#cash_on_delivery').on('click', function() {
+
             });
         });
     </script>

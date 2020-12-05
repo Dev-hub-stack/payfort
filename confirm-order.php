@@ -8,23 +8,21 @@ require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
-if(isset($_GET['session_id'])) {
-    session_start();
-    $cart = getCart($_SESSION['order_number']);
-    $objFort->session_id = $_GET['session_id'];
-    if(is_null($cart)) {
-        echo 'Cart not found';
-        exit;
-    }
-    $user = getUserBilling($_SESSION['order_number']);
-    if(!empty($user)){
-        $objFort->customerEmail = $user['email'];
-    }
-    $objFort->amount = calculateTotalAmount($cart);
-    $_SESSION['amount'] = $objFort->amount;
-    $cartItems = setCartItems($cart['id']);
-    $objFort->items = $cartItems;
+session_start();
+$_SESSION['paymentType'] = $_GET['paymentType'];
+$cart = getCart($_SESSION['order_number']);
+if(is_null($cart)) {
+    echo 'Cart not found';
+    exit;
 }
+$user = getUserBilling($_SESSION['order_number']);
+if(!empty($user)){
+    $objFort->customerEmail = $user['email'];
+}
+$objFort->amount = calculateTotalAmount($cart);
+$_SESSION['amount'] = $objFort->amount;
+$cartItems = setCartItems($cart['id']);
+$objFort->items = $cartItems;
 $amount =  $objFort->amount;
 $currency = $objFort->currency;
 $totalAmount = $amount;
@@ -101,6 +99,19 @@ $paymentMethod = $_REQUEST['payment_method'];
                                 <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
+                        <?php
+                        if($_GET['paymentType'] == 'twenty_percent'): ?>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>20% Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Outstanding Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount - $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
                     </table>
                 <?php endif; ?>
             </li>
@@ -145,7 +156,7 @@ $paymentMethod = $_REQUEST['payment_method'];
             var paymentMethod = '<?php echo $paymentMethod?>';
             //load merchant page iframe
             if(paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>', '<?= $_GET['paymentType']; ?>');
             }
         });
     </script>

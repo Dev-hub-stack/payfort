@@ -16,10 +16,16 @@ if($_REQUEST['r'] == 'getPaymentPage') {
     $billingDetail = getUserBilling($_REQUEST['order_number']);
     $objFort->customerEmail = $billingDetail['email'];
     $objFort->name = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
-    $objFort->amount = calculateTotalAmount($cart);
-    
+
+    if(isset($_GET['paymentType']) && $_GET['paymentType'] == 'twenty_percent') {
+        $objFort->amount = calculateTotalAmount($cart) * 0.2;
+    } else {
+        $objFort->amount = calculateTotalAmount($cart);
+    }
+
+
     $objFort->orderNumber = $_REQUEST['order_number'];
-    $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'), $_REQUEST['order_number']);
+    $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'), $_REQUEST['order_number'], $_GET['paymentType']);
 }
 elseif($_REQUEST['r'] == 'merchantPageReturn') {
 
@@ -27,7 +33,11 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
     $billingDetail = getUserBilling($_REQUEST['order_number']);
     $objFort->customerEmail = $billingDetail['email'];
     $objFort->name = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
-    $objFort->amount = calculateTotalAmount($cart);
+    if(isset($_GET['paymentType']) && $_GET['paymentType'] == 'twenty_percent') {
+        $objFort->amount = calculateTotalAmount($cart) * 0.2;
+    } else {
+        $objFort->amount = calculateTotalAmount($cart);
+    }
 
     $objFort->orderNumber = $_REQUEST['order_number'];
     $objFort->processMerchantPageResponse();

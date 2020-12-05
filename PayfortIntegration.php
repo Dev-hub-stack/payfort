@@ -80,10 +80,10 @@ class PayfortIntegration
     {
     }
 
-    public function processRequest($paymentMethod, $order_number)
+    public function processRequest($paymentMethod, $order_number, $paymentType)
     {
         if ($paymentMethod == 'cc_merchantpage' || $paymentMethod == 'cc_merchantpage2' || $paymentMethod == 'installments_merchantpage') {
-            $merchantPageData = $this->getMerchantPageData($paymentMethod, $order_number);
+            $merchantPageData = $this->getMerchantPageData($paymentMethod, $order_number, $paymentType);
             $postData = $merchantPageData['params'];
             $gatewayUrl = $merchantPageData['url'];
         }
@@ -141,10 +141,10 @@ class PayfortIntegration
         return array('url' => $gatewayUrl, 'params' => $postData);
     }
     
-    public function getMerchantPageData($paymentMethod, $order_number = NULL)
+    public function getMerchantPageData($paymentMethod, $order_number = NULL, $paymentType = 'full')
     {
         $merchantReference = $this->generateMerchantReference();
-        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&order_number=' . $order_number);
+        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&order_number=' . $order_number . '&paymentType=' . $paymentType);
         if(isset($_GET['3ds']) && $_GET['3ds'] == 'no') {
             $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&3ds=no');
         }
@@ -271,6 +271,7 @@ class PayfortIntegration
             unset($params['integration_type']);
             unset($params['3ds']);
             unset($params['order_number']);
+            unset($params['paymentType']);
             $merchantReference = $params['merchant_reference'];
             $calculatedSignature = $this->calculateSignature($params, 'response');
             $success       = true;
