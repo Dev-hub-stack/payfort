@@ -124,9 +124,10 @@ $totalAmount = $amount;
         </ul>-->
     </section>
 
-    <div class="h-seperator"></div>
 
-    <section class="payment-method">
+    <section class="payment-method" id="twenty-percent-wrapper">
+        <div class="h-seperator"></div>
+
         <label class="lead" for="">
             Pay 20% and remaining amount on delivery.
         </label>
@@ -299,6 +300,14 @@ $totalAmount = $amount;
     <script type="text/javascript" src="assets/js/checkout.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+
+            // GET Country detail by IP
+            $.get('https://extreme-ip-lookup.com/json/', function(response) {
+                if(response && response.countryCode == 'UAE') {
+                    $('#twenty-percent-wrapper').hide();
+                }
+            })
+
             let amount = '<?= $totalAmount; ?>;';
             let paymentType = 'full';
             $('input:radio[name=payment_option]').click(function () {
