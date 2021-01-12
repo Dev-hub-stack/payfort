@@ -125,7 +125,11 @@ $totalAmount = $amount;
     </section>
 
 
-    <section class="payment-method" id="twenty-percent-wrapper" style="display: none">
+<?php
+if($billingDetail['country'] == 'UAE'):
+
+?>
+    <section class="payment-method" id="twenty-percent-wrapper">
         <div class="h-seperator"></div>
 
         <label class="lead" for="">
@@ -146,6 +150,8 @@ $totalAmount = $amount;
         </li>
         </ul>
     </section>
+
+<?php endif; ?>
 
     <div class="h-seperator"></div>
 
@@ -301,12 +307,12 @@ $totalAmount = $amount;
     <script type="text/javascript">
         $(document).ready(function () {
 
-            // GET Country detail by IP
+            /*// GET Country detail by IP
             $.get('https://extreme-ip-lookup.com/json/', function(response) {
                 if(response && response.countryCode == 'AE') {
                     $('#twenty-percent-wrapper').show();
                 }
-            })
+            })*/
 
             let amount = '<?= $totalAmount; ?>;';
             let paymentType = 'full';

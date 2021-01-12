@@ -25,7 +25,7 @@ function getCart($order_number) {
 
 function getUserBilling($order_number) {
     global $conn;
-    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.order_number = "' . $order_number . '"');
+    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, billing.country, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.order_number = "' . $order_number . '"');
     if($row = $query->fetch_assoc()) {
         return $row;
     }
