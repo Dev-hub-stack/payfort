@@ -303,7 +303,7 @@ $totalAmount = $amount;
 
             // GET Country detail by IP
             $.get('https://extreme-ip-lookup.com/json/', function(response) {
-                if(response && response.countryCode == 'UAE') {
+                if(response && response.countryCode == 'AE') {
                     $('#twenty-percent-wrapper').show();
                 }
             })
