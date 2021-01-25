@@ -24,6 +24,9 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
     $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
+
+    $cartAddOnItems = cartAddOns($cart['id']);
+    $objFort->addonItems = $cartAddOnItems;
 }
 $amount = $objFort->amount;
 $currency = $objFort->currency;
@@ -62,6 +65,15 @@ $totalAmount = $amount;
                                     SKU: <?= $item->item_sku; ?></td>
                                 <td><?= $item->item_quantity; ?></td>
                                 <td><?= $objFort->currency . ' ' . $item->item_price; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+
+                        <?php foreach ($objFort->addonItems as $addonItem) :
+                            ?>
+                            <tr>
+                                <td><?= $addonItem->item_name; ?></td>
+                                <td><?= $addonItem->item_quantity; ?></td>
+                                <td><?= $objFort->currency . ' ' . $addonItem->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
                         <tr>

@@ -63,6 +63,41 @@ function setCartItems($cart_id) {
     return $cart_items;
 }
 
+/**
+ * [cartAddOns]
+ * @param  $cart_id
+ * @return cartAddOnsItems
+ */
+function cartAddOns($cart_id) {
+    global $conn;
+    $cart_items = [];
+    $cartAddOns = $conn->query("
+        SELECT ca.*, ao.`image`, ao.`title`, ao.`stock_status`, ao.`products`
+        FROM `cart_addons` ca
+        INNER JOIN add_ons ao ON ca.`product_id` = ao.`id`
+        WHERE ca.cart_id =" . $cart_id
+    );
+
+    while ($addOn = $cartAddOns->fetch_assoc()) {
+        $item = new \stdClass();
+        $item->item_description = "";
+        $item->item_name = $addOn['title'];
+        $item->item_sku = $product['addon_id'];
+        $images = $product['image'];
+        $item->item_image = !is_null($images) ?: json_decode($product['images'])[0];
+        $item->item_price = $addOn['unit_price'];
+        $item->item_quantity = $addOn['quantity'];
+        $cart_items[] = $item;
+
+        /*echo '<pre>';
+        print_r($cart_items);
+        exit;*/
+
+    }
+
+    return $cart_items;
+}
+
 function confirm_order() {
     try {
         session_start();
