@@ -105,6 +105,15 @@ function confirm_order() {
         $order_number = $_SESSION['order_number'];
         global $conn;
         $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+
+
+        $order = $conn->query('SELECT payment_type FROM orders WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        $row = $order->fetch_assoc();
+        if($row['payment_type'] == 'twenty_percent'){
+            $conn->query('UPDATE orders SET status = 5 WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        }
+
+
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         sendEmail(getOrderId());
         return true;
