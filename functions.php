@@ -182,7 +182,7 @@ function cartAddOns($cart_id) {
     $cartAddOns = $conn->query("
         SELECT ca.*, ao.`image`, ao.`title`, ao.`stock_status`, ao.`products`
         FROM `cart_addons` ca
-        INNER JOIN add_ons ao ON ca.`product_id` = ao.`id`
+        INNER JOIN add_ons ao ON ca.`addon_id` = ao.`id`
         WHERE ca.cart_id =" . $cart_id
     );
 
