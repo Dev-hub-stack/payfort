@@ -190,9 +190,9 @@ function cartAddOns($cart_id) {
         $item = new \stdClass();
         $item->item_description = "";
         $item->item_name = $addOn['title'];
-        $item->item_sku = $product['addon_id'];
-        $images = $product['image'];
-        $item->item_image = !is_null($images) ?: json_decode($product['images'])[0];
+        $item->item_sku = $addOn['addon_id'];
+        $images = $addOn['image'];
+        $item->item_image = !is_null($images) ?: json_decode($addOn['images'])[0];
         $item->item_price = $addOn['unit_price'];
         $item->item_quantity = $addOn['quantity'];
         $cart_items[] = $item;
