@@ -1,6 +1,8 @@
 <?php
-ini_set('display_errors', 1);
-error_reporting(E_ALL);
+ ini_set('display_errors', 0);
+// error_reporting(E_ALL);
+ error_reporting(0);
+
 ?>
 <?php include('header.php') ?>
 <?php
@@ -10,9 +12,13 @@ $objFort = new PayfortIntegration();
 $session_id = NULL;
 if (isset($_GET['session_id']) && $_GET['order_number']) {
     session_start();
-    $cart = getCart($_GET['session_id'], $_GET['order_number']);
+    $cart = getCart($_GET['order_number']);
     $session_id = $_GET['session_id'];
-    $objFort->customerEmail = getUserEmail($_GET['session_id']);
+    $orderNumber = $_GET['order_number'];
+    $billingDetail = getUserBilling($_GET['order_number']);
+    $objFort->customerEmail = $billingDetail['email'];
+    $_SESSION['email'] = $objFort->customerEmail;
+    $_SESSION['name'] = $billingDetail['first_name'] . ' ' . $billingDetail['last_name'];
     $objFort->session_id = $session_id;
     $_SESSION['session_id'] = $session_id;
     $_SESSION['order_number'] = $_GET['order_number'];
@@ -21,7 +27,8 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
         exit;
     }
 
-    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
+    $objFort->amount = calculateTotalAmount($cart);
+    $_SESSION['amount'] = $objFort->convertFortAmount($objFort->amount, $objFort->currency);
     $cartItems = setCartItems($cart['id']);
     $objFort->items = $cartItems;
 
@@ -79,7 +86,7 @@ $totalAmount = $amount;
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
-                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['sub_total']); ?></strong>
                             </td>
                         </tr>
                         <tr>
@@ -106,7 +113,7 @@ $totalAmount = $amount;
                         ?>
                         <tr>
                             <td colspan="3" style="text-align: right">
-                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
                     </table>
@@ -129,6 +136,35 @@ $totalAmount = $amount;
         </ul>-->
     </section>
 
+
+<?php
+if($billingDetail['country'] == 'UAE'):
+
+?>
+    <section class="payment-method" id="twenty-percent-wrapper">
+        <div class="h-seperator"></div>
+
+        <label class="lead" for="">
+            Pay 20% and remaining amount on delivery.
+        </label>
+        <ul>
+        <li>
+            <input id="cash_on_delivery" type="checkbox" name="payment_option" value="cc_merchantpage"
+                   style="display: none">
+            <label class="payment-option" for="cash_on_delivery">
+                <span class="name">AED <?= $totalAmount * 0.2 ?> (20%)</span>
+                <em class="seperator hidden"></em>
+                <div class="demo-container hidden"> <!--  Area for the iframe section -->
+                    <iframe src="" frameborder="0"></iframe>
+                </div>
+
+            </label>
+        </li>
+        </ul>
+    </section>
+
+<?php endif; ?>
+
     <div class="h-seperator"></div>
 
     <section class="payment-method">
@@ -136,18 +172,18 @@ $totalAmount = $amount;
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
-            <!-- <li>
-                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
-                 <label class="payment-option active" for="po_creditcard">
-                     <img src="assets/img/cc.png" alt="">
-                     <span class="name">Pay with credit cards</span>
-                     <em class="seperator hidden"></em>
-                     <div class="demo-container hidden">
-                         <iframe src="" frameborder="0"></iframe>
-                     </div>
-
-                 </label>
-             </li>-->
+<!--             <li>-->
+<!--                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">-->
+<!--                 <label class="payment-option active" for="po_creditcard">-->
+<!--                     <img src="assets/img/cc.png" alt="">-->
+<!--                     <span class="name">Pay with credit cards</span>-->
+<!--                     <em class="seperator hidden"></em>-->
+<!--                     <div class="demo-container hidden">-->
+<!--                         <iframe src="" frameborder="0"></iframe>-->
+<!--                     </div>-->
+<!---->
+<!--                 </label>-->
+<!--             </li>-->
             <li>
                 <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage"
                        style="display: none">
@@ -282,6 +318,16 @@ $totalAmount = $amount;
     <script type="text/javascript" src="assets/js/checkout.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+
+            /*// GET Country detail by IP
+            $.get('https://extreme-ip-lookup.com/json/', function(response) {
+                if(response && response.countryCode == 'AE') {
+                    $('#twenty-percent-wrapper').show();
+                }
+            })*/
+
+            let amount = '<?= $totalAmount; ?>;';
+            let paymentType = 'full';
             $('input:radio[name=payment_option]').click(function () {
                 $('input:radio[name=payment_option]').each(function () {
                     if ($(this).is(':checked')) {
@@ -296,22 +342,31 @@ $totalAmount = $amount;
                 });
             });
             $('#btn_continue').click(function () {
+
                 var paymentMethod = $('input:radio[name=payment_option]:checked').val();
+                if($('#cash_on_delivery').is(":checked")) {
+                    paymentType = 'twenty_percent';
+                }
                 if (paymentMethod == '' || paymentMethod === undefined || paymentMethod === null) {
                     alert('Pelase Select Payment Method!');
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&session_id=<?= $session_id; ?>'
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType
                 }
+
                 if (paymentMethod == 'cc_merchantpage2') {
                     var isValid = payfortFortMerchantPage2.validateCcForm();
                     if (isValid) {
-                        getPaymentPage(paymentMethod);
+                        getPaymentPage(paymentMethod, amount);
                     }
                 } else {
-                    getPaymentPage(paymentMethod);
+                    getPaymentPage(paymentMethod, amount);
                 }
+            });
+
+            $('#cash_on_delivery').on('click', function() {
+
             });
         });
     </script>

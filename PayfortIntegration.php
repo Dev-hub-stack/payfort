@@ -4,7 +4,6 @@
  * 
  */
 require './contants.php';
-
 class PayfortIntegration
 {
 
@@ -75,14 +74,16 @@ class PayfortIntegration
      */
     public $projectUrlPath     = BASE_PATH;
 
+    public $name = 'John';
+
     public function __construct()
     {
     }
 
-    public function processRequest($paymentMethod)
+    public function processRequest($paymentMethod, $order_number, $paymentType)
     {
         if ($paymentMethod == 'cc_merchantpage' || $paymentMethod == 'cc_merchantpage2' || $paymentMethod == 'installments_merchantpage') {
-            $merchantPageData = $this->getMerchantPageData($paymentMethod);
+            $merchantPageData = $this->getMerchantPageData($paymentMethod, $order_number, $paymentType);
             $postData = $merchantPageData['params'];
             $gatewayUrl = $merchantPageData['url'];
         }
@@ -97,6 +98,7 @@ class PayfortIntegration
     }
 
     public function getRedirectionData($paymentMethod) {
+
         $merchantReference = $this->generateMerchantReference();
         if ($this->sandboxMode) {
             $gatewayUrl = $this->gatewaySandboxHost . 'FortAPI/paymentPage';
@@ -121,6 +123,7 @@ class PayfortIntegration
             'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
 
+
         if ($paymentMethod == 'sadad') {
             $postData['payment_option'] = 'SADAD';
         }
@@ -138,10 +141,10 @@ class PayfortIntegration
         return array('url' => $gatewayUrl, 'params' => $postData);
     }
     
-    public function getMerchantPageData($paymentMethod)
+    public function getMerchantPageData($paymentMethod, $order_number = NULL, $paymentType = 'full')
     {
         $merchantReference = $this->generateMerchantReference();
-        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn');
+        $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&order_number=' . $order_number . '&paymentType=' . $paymentType);
         if(isset($_GET['3ds']) && $_GET['3ds'] == 'no') {
             $returnUrl = $this->getUrl('route.php?r=merchantPageReturn&3ds=no');
         }
@@ -267,6 +270,8 @@ class PayfortIntegration
             unset($params['signature']);
             unset($params['integration_type']);
             unset($params['3ds']);
+            unset($params['order_number']);
+            unset($params['paymentType']);
             $merchantReference = $params['merchant_reference'];
             $calculatedSignature = $this->calculateSignature($params, 'response');
             $success       = true;
@@ -301,12 +306,14 @@ class PayfortIntegration
                     }
                     else {
                         $params    = $host2HostParams;
+                        
                         $responseSignature = $host2HostParams['signature'];
                         $merchantReference = $params['merchant_reference'];
                         unset($params['r']);
                         unset($params['signature']);
                         unset($params['integration_type']);
                         $calculatedSignature = $this->calculateSignature($params, 'response');
+
                         if ($responseSignature != $calculatedSignature) {
                             $success = false;
                             $reason  = 'Invalid signature.';
@@ -368,11 +375,12 @@ class PayfortIntegration
             'amount'              => $this->convertFortAmount($this->amount, $this->currency),
             'currency'            => strtoupper($this->currency),
             'customer_email'      => $this->customerEmail,
-            'customer_name'       => 'John Doe',
+            'customer_name'       => $this->name,
             'token_name'          => $fortParams['token_name'],
             'language'            => $this->language,
             'return_url'          => $this->getUrl('route.php?r=processResponse'),
         );
+
         
         if(!empty($merchantPageData['paymentMethod']) && $merchantPageData['paymentMethod'] == 'installments_merchantpage'){
                 $postData['installments']            = 'YES';
@@ -486,11 +494,10 @@ class PayfortIntegration
      */
     public function convertFortAmount($amount, $currencyCode)
     {
-        $new_amount = 0;
-        $total = $amount;
         $decimalPoints    = $this->getCurrencyDecimalPoints($currencyCode);
-        $new_amount = round($total, $decimalPoints) * (pow(10, $decimalPoints));
-        return $new_amount;
+        $figureToMultiply = (pow(10, $decimalPoints));
+        $rounded = round($amount, $decimalPoints);
+        return  $rounded * $figureToMultiply;
     }
 
     public  function castAmountFromFort($amount, $currencyCode)

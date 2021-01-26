@@ -1,5 +1,5 @@
 <?php
-ini_set('display_errors', 1);
+ini_set('display_errors', 0);
 error_reporting(E_ALL);
 ?>
 <?php include('header.php') ?>
@@ -8,25 +8,27 @@ require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
-if(isset($_GET['session_id'])) {
-    session_start();
-    $cart = getCart($_SESSION['session_id'], $_SESSION['order_number']);
-    $objFort->session_id = $_GET['session_id'];
-    if(is_null($cart)) {
-        echo 'Cart not found';
-        exit;
-    }
-    $email = getUserEmail($_SESSION['session_id']);
-    if(!empty($email)){
-        $objFort->customerEmail = $email;
-    }
-    $objFort->amount = $cart['total'] + $cart['shipping'] - $cart['discount'];
-    $cartItems = setCartItems($cart['id']);
-    $objFort->items = $cartItems;
-
-    $cartAddOnItems = cartAddOns($cart['id']);
-    $objFort->addonItems = $cartAddOnItems;
+session_start();
+$_SESSION['paymentType'] = $_GET['paymentType'];
+$cart = getCart($_SESSION['order_number']);
+if(is_null($cart)) {
+    echo 'Cart not found';
+    exit;
 }
+$user = getUserBilling($_SESSION['order_number']);
+if(!empty($user)){
+    $objFort->customerEmail = $user['email'];
+}
+$objFort->amount = calculateTotalAmount($cart);
+$_SESSION['amount'] = $objFort->amount;
+$cartItems = setCartItems($cart['id']);
+$objFort->items = $cartItems;
+
+// Code Added By Haseeb for addOns -- Start
+$cartAddOnItems = cartAddOns($cart['id']);
+$objFort->addonItems = $cartAddOnItems;
+// Code Added By Haseeb for addOns -- End
+
 $amount =  $objFort->amount;
 $currency = $objFort->currency;
 $totalAmount = $amount;
@@ -71,6 +73,7 @@ $paymentMethod = $_REQUEST['payment_method'];
                             </tr>
                         <?php endforeach; ?>
 
+                        <!-- Code Added By Haseeb for addOns -- Start -->
                         <?php foreach ($objFort->addonItems as $addonItem) :
                             ?>
                             <tr>
@@ -79,12 +82,13 @@ $paymentMethod = $_REQUEST['payment_method'];
                                 <td><?= $objFort->currency . ' ' . $addonItem->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
+                        <!-- Code Added By Haseeb for addOns -- End -->
 
-                        
+
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
-                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['total']); ?></strong>
+                                    Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $cart['sub_total']); ?></strong>
                             </td>
                         </tr>
                         <tr>
@@ -111,9 +115,22 @@ $paymentMethod = $_REQUEST['payment_method'];
                         ?>
                         <tr>
                             <td colspan="3" style="text-align: right">
-                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $totalAmount); ?></strong>
+                                <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
+                        <?php
+                        if($_GET['paymentType'] == 'twenty_percent'): ?>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>20% Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Outstanding Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount - $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
                     </table>
                 <?php endif; ?>
             </li>
@@ -131,9 +148,10 @@ $paymentMethod = $_REQUEST['payment_method'];
     <?php if($paymentMethod == 'cc_merchantpage' || $paymentMethod == 'installments_merchantpage') ://merchant page iframe method ?>
         <section class="merchant-page-iframe">
             <?php
-                $merchantPageData = $objFort->getMerchantPageData($paymentMethod);
+                $merchantPageData = $objFort->getMerchantPageData($paymentMethod, $_GET['order_number']);
                 $postData = $merchantPageData['params'];
                 $gatewayUrl = $merchantPageData['url'];
+
             ?>
             <div class="cc-iframe-display">
                 <div id="div-pf-iframe" style="display:none">
@@ -157,7 +175,7 @@ $paymentMethod = $_REQUEST['payment_method'];
             var paymentMethod = '<?php echo $paymentMethod?>';
             //load merchant page iframe
             if(paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                getPaymentPage(paymentMethod);
+                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>', '<?= $_GET['paymentType']; ?>');
             }
         });
     </script>

@@ -2,7 +2,9 @@
 require_once 'contants.php';
 require_once 'functions.php';
 if(!confirm_order()) {
-    header('Location: ' . WEB_URL . '/cancel-order');
+    //header('Location: ' . WEB_URL . '/cancel-order');
+    echo "<script>window.location.href='https://tunerstop.com/cancel-order';</script>";
+    exit;
 } else {
     $orderId = getOrderId();
     header('Location: ' . WEB_URL . '/thank-you?order_id=' . $orderId);
@@ -47,6 +49,6 @@ if(!confirm_order()) {
     <div class="h-seperator"></div>
     
     <section class="actions">
-        <a class="btm" href="https://wheel.ahmadhassan.design">New Order</a>
+        <a class="btm" href="https://tunerstop.com">New Order</a>
     </section>
 <?php include('footer.php') ?>
