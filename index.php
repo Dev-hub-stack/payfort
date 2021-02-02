@@ -353,7 +353,7 @@ if($billingDetail['country'] == 'UAE'):
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType+ '&session_id=<?= $_GET['session_id']; ?>'
                 }
 
                 if (paymentMethod == 'cc_merchantpage2') {
