@@ -12,7 +12,7 @@ define('ACCESS_CODE', 'YrTEkNCWmYAkbxXtCCNf');
 define('PAYFORT_SHA_REQUEST_PHRASE', '$2y$10$zNrzxksc/');
 //define('PAYFORT_SHA_RESPONSE_PHRASE', '$2y$10$RF7WRs3TN');
 define('PAYFORT_SHA_RESPONSE_PHRASE', '$2y$10$dr0uio8Ha');
-//define('CURRENCY', 'AED');
+define('CURRENCY', 'AED');
 define('SANDBOX_MODE', false);
 define('WEB_URL', 'https://tunerstop.com/');
 define('API_URL', 'https://admin.tunerstop.com/api');
@@ -21,8 +21,11 @@ define('API_URL', 'https://admin.tunerstop.com/api');
 
 //DB Credentials
 define('HOST', 'localhost');
-define('USER', 'nexuswebstudio');
-define('DB', 'tunerstop2020');
 //define('USER', 'root');
+//define('DB', 'tuner');
+//define('PASSWORD', 'kePFut#3!0Lux$');
+define('USER', 'root');
+define('DB', 'tunerstop2020');
+define('PASSWORD', 'password');
 //define('DB', 'tuner_stop');
 //define('PASSWORD', '4slash1234');

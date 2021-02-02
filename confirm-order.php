@@ -23,7 +23,9 @@ if(isset($_GET['session_id'])) {
     $objFort->amount = calculateTotalAmount($cart);
     $_SESSION['amount'] = $objFort->amount;
     $cartItems = setCartItems($cart['id']);
-    $objFort->items = $cartItems;
+  $cartAddon = getCartAddon($cart['id']);
+  $objFort->items = $cartItems;
+  $objFort->addons = $cartAddon;
 }
 $amount =  $objFort->amount;
 $currency = $objFort->currency;
@@ -68,6 +70,14 @@ $paymentMethod = $_REQUEST['payment_method'];
                                 <td><?= $objFort->currency . ' ' .$item->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
+                      <?php foreach ($objFort->addons as $item) :
+                        ?>
+                          <tr>
+                              <td><?= $item->item_name; ?></td>
+                              <td><?= $item->item_quantity; ?></td>
+                              <td><?= $objFort->currency . ' ' . $item->total_price; ?></td>
+                          </tr>
+                      <?php endforeach; ?>
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub

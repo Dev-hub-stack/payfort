@@ -30,7 +30,9 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
     $objFort->amount = calculateTotalAmount($cart);
     $_SESSION['amount'] = $objFort->convertFortAmount($objFort->amount, $objFort->currency);
     $cartItems = setCartItems($cart['id']);
+    $cartAddon = getCartAddon($cart['id']);
     $objFort->items = $cartItems;
+    $objFort->addons = $cartAddon;
 }
 $amount = $objFort->amount;
 $currency = $objFort->currency;
@@ -69,6 +71,14 @@ $totalAmount = $amount;
                                     SKU: <?= $item->item_sku; ?></td>
                                 <td><?= $item->item_quantity; ?></td>
                                 <td><?= $objFort->currency . ' ' . $item->item_price; ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                      <?php foreach ($objFort->addons as $item) :
+                            ?>
+                            <tr>
+                                <td><?= $item->item_name; ?></td>
+                                <td><?= $item->item_quantity; ?></td>
+                                <td><?= $objFort->currency . ' ' . $item->total_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
                         <tr>

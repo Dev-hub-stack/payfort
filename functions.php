@@ -62,6 +62,24 @@ function setCartItems($cart_id) {
 
     return $cart_items;
 }
+function getCartAddon($cart_id){
+  global $conn;
+  $cart_addons     = [];
+  $cartItemsQuery = $conn->query('Select cart_addons.*,add_ons.title, add_ons.image from cart_addons
+        INNER JOIN add_ons on add_ons.id = cart_addons.addon_id
+        where cart_id = ' . $cart_id);
+  while ($row = $cartItemsQuery->fetch_assoc()) {
+    $item                   = new \stdClass();
+    $item->item_name        = $row['title'];
+    $images                 = $row['image'];
+    $item->item_image       = $images;
+    $item->unit_price       = $row['unit_price'];
+    $item->total_price       = $row['total_price'];
+    $item->item_quantity    = $row['quantity'];
+    $cart_addons[]           = $item;
+  }
+  return $cart_addons;
+}
 
 function confirm_order() {
     try {
