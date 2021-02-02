@@ -33,6 +33,9 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
     $cartAddon = getCartAddon($cart['id']);
     $objFort->items = $cartItems;
     $objFort->addons = $cartAddon;
+    $cartAddOnItems = cartAddOns($cart['id']);
+    $objFort->addonItems = $cartAddOnItems;
+
 }
 $amount = $objFort->amount;
 $currency = $objFort->currency;
@@ -73,12 +76,12 @@ $totalAmount = $amount;
                                 <td><?= $objFort->currency . ' ' . $item->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
-                      <?php foreach ($objFort->addons as $item) :
+                        <?php foreach ($objFort->addonItems as $addonItem) :
                             ?>
                             <tr>
-                                <td><?= $item->item_name; ?></td>
-                                <td><?= $item->item_quantity; ?></td>
-                                <td><?= $objFort->currency . ' ' . $item->total_price; ?></td>
+                                <td><?= $addonItem->item_name; ?></td>
+                                <td><?= $addonItem->item_quantity; ?></td>
+                                <td><?= $objFort->currency . ' ' . $addonItem->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
                         <tr>
@@ -134,6 +137,35 @@ $totalAmount = $amount;
         </ul>-->
     </section>
 
+
+<?php
+if($billingDetail['country'] == 'UAE'):
+
+?>
+    <section class="payment-method" id="twenty-percent-wrapper">
+        <div class="h-seperator"></div>
+
+        <label class="lead" for="">
+            Pay 20% and remaining amount on delivery.
+        </label>
+        <ul>
+        <li>
+            <input id="cash_on_delivery" type="checkbox" name="payment_option" value="cc_merchantpage"
+                   style="display: none">
+            <label class="payment-option" for="cash_on_delivery">
+                <span class="name">AED <?= $totalAmount * 0.2 ?> (20%)</span>
+                <em class="seperator hidden"></em>
+                <div class="demo-container hidden"> <!--  Area for the iframe section -->
+                    <iframe src="" frameborder="0"></iframe>
+                </div>
+
+            </label>
+        </li>
+        </ul>
+    </section>
+
+<?php endif; ?>
+
     <div class="h-seperator"></div>
 
     <section class="payment-method">
@@ -141,18 +173,18 @@ $totalAmount = $amount;
             Choose a Payment Method <small>(click one of the options below)</small>
         </label>
         <ul>
-             <li>
-                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">
-                 <label class="payment-option active" for="po_creditcard">
-                     <img src="assets/img/cc.png" alt="">
-                     <span class="name">Pay with credit cards</span>
-                     <em class="seperator hidden"></em>
-                     <div class="demo-container hidden">
-                         <iframe src="" frameborder="0"></iframe>
-                     </div>
-
-                 </label>
-             </li>
+<!--             <li>-->
+<!--                 <input id="po_creditcard" type="radio" name="payment_option" value="creditcard"  checked="checked" style="display: none">-->
+<!--                 <label class="payment-option active" for="po_creditcard">-->
+<!--                     <img src="assets/img/cc.png" alt="">-->
+<!--                     <span class="name">Pay with credit cards</span>-->
+<!--                     <em class="seperator hidden"></em>-->
+<!--                     <div class="demo-container hidden">-->
+<!--                         <iframe src="" frameborder="0"></iframe>-->
+<!--                     </div>-->
+<!---->
+<!--                 </label>-->
+<!--             </li>-->
             <li>
                 <input id="po_cc_merchantpage" type="radio" name="payment_option" value="cc_merchantpage"
                        style="display: none">
@@ -287,6 +319,16 @@ $totalAmount = $amount;
     <script type="text/javascript" src="assets/js/checkout.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
+
+            /*// GET Country detail by IP
+            $.get('https://extreme-ip-lookup.com/json/', function(response) {
+                if(response && response.countryCode == 'AE') {
+                    $('#twenty-percent-wrapper').show();
+                }
+            })*/
+
+            let amount = '<?= $totalAmount; ?>;';
+            let paymentType = 'full';
             $('input:radio[name=payment_option]').click(function () {
                 $('input:radio[name=payment_option]').each(function () {
                     if ($(this).is(':checked')) {
@@ -301,22 +343,31 @@ $totalAmount = $amount;
                 });
             });
             $('#btn_continue').click(function () {
+
                 var paymentMethod = $('input:radio[name=payment_option]:checked').val();
+                if($('#cash_on_delivery').is(":checked")) {
+                    paymentType = 'twenty_percent';
+                }
                 if (paymentMethod == '' || paymentMethod === undefined || paymentMethod === null) {
                     alert('Pelase Select Payment Method!');
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>'
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType
                 }
+
                 if (paymentMethod == 'cc_merchantpage2') {
                     var isValid = payfortFortMerchantPage2.validateCcForm();
                     if (isValid) {
-                        getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                        getPaymentPage(paymentMethod, amount);
                     }
                 } else {
-                    getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                    getPaymentPage(paymentMethod, amount);
                 }
+            });
+
+            $('#cash_on_delivery').on('click', function() {
+
             });
         });
     </script>

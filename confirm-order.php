@@ -26,7 +26,22 @@ if(isset($_GET['session_id'])) {
   $cartAddon = getCartAddon($cart['id']);
   $objFort->items = $cartItems;
   $objFort->addons = $cartAddon;
+
 }
+$user = getUserBilling($_SESSION['order_number']);
+if(!empty($user)){
+    $objFort->customerEmail = $user['email'];
+}
+$objFort->amount = calculateTotalAmount($cart);
+$_SESSION['amount'] = $objFort->amount;
+$cartItems = setCartItems($cart['id']);
+$objFort->items = $cartItems;
+
+// Code Added By Haseeb for addOns -- Start
+//$cartAddOnItems = cartAddOns($cart['id']);
+//$objFort->addonItems = $cartAddOnItems;
+// Code Added By Haseeb for addOns -- End
+
 $amount =  $objFort->amount;
 $currency = $objFort->currency;
 $totalAmount = $amount;
@@ -78,6 +93,9 @@ $paymentMethod = $_REQUEST['payment_method'];
                               <td><?= $objFort->currency . ' ' . $item->total_price; ?></td>
                           </tr>
                       <?php endforeach; ?>
+
+
+                       
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub
@@ -111,6 +129,19 @@ $paymentMethod = $_REQUEST['payment_method'];
                                 <strong>Total: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount); ?></strong>
                             </td>
                         </tr>
+                        <?php
+                        if($_GET['paymentType'] == 'twenty_percent'): ?>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>20% Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3" style="text-align: right">
+                                <strong>Outstanding Amount: <?= $objFort->currency; ?> <?php echo sprintf("%.2f", $objFort->amount - $objFort->amount * 0.2); ?></strong>
+                            </td>
+                        </tr>
+                        <?php endif; ?>
                     </table>
                 <?php endif; ?>
             </li>
@@ -155,7 +186,7 @@ $paymentMethod = $_REQUEST['payment_method'];
             var paymentMethod = '<?php echo $paymentMethod?>';
             //load merchant page iframe
             if(paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>');
+                getPaymentPage(paymentMethod, '<?= $_GET['order_number']; ?>', '<?= $_GET['paymentType']; ?>');
             }
         });
     </script>

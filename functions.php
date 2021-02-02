@@ -25,7 +25,7 @@ function getCart($order_number) {
 
 function getUserBilling($order_number) {
     global $conn;
-    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.order_number = "' . $order_number . '"');
+    $query = $conn->query('SELECT billing.email, billing.first_name, billing.last_name, billing.country, orders.id from orders join billing on billing.order_id = orders.id WHERE orders.order_number = "' . $order_number . '"');
     if($row = $query->fetch_assoc()) {
         return $row;
     }
@@ -82,14 +82,40 @@ function getCartAddon($cart_id){
 }
 
 function confirm_order() {
+    session_start();
+    $session_id = $_SESSION['session_id'];
+    $order_number = $_SESSION['order_number'];
+    global $conn;
+    $paymentMethod = $_GET['payment_option'];
+    $card_number = $_GET['card_number'];
+    $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
+    $fort_id = $_GET['fort_id'];
+    $paymentType = $_SESSION['paymentType'];
+    $outstanding_amount = NULL;
+
+    if($paymentType == 'twenty_percent') {
+        $paid_amount = $_SESSION['amount'] * 0.2;
+        $outstanding_amount = $_SESSION['amount'] - $paid_amount;
+    } else {
+        $paid_amount = $_SESSION['amount'];
+    }
     try {
-        session_start();
-        $session_id = $_SESSION['session_id'];
-        $order_number = $_SESSION['order_number'];
-        global $conn;
-        $conn->query('UPDATE orders SET status = 1 WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+
+        $conn->query('UPDATE orders SET status = 1,
+                                payment_method = "'. $paymentMethod . '", 
+                                card_number = "'. $card_number .'", 
+                                card_holder = "'. $card_holder_name .'",
+                                payment_type = "'. $paymentType .'",
+                                paid_amount = '. $paid_amount .',
+                                outstanding_amount = '. $outstanding_amount .',
+                                fort_id = "'. $fort_id .'"
+                    WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         sendEmail(getOrderId());
+        unset($_SESSION['paymentType']);
+        unset($_SESSION['amount']);
+        unset($_SESSION['order_number']);
+        unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
         return false;
@@ -97,7 +123,7 @@ function confirm_order() {
 }
 
 function getOrderId() {
-    session_start();
+    //session_start();
     $order_number = $_SESSION['order_number'];
     global $conn;
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
@@ -133,7 +159,6 @@ function sendEmail($order_id) {
 
 function calculateTotalAmount($cart) {
     $total = 0;
-
     if ($cart['vat'] == 0) {
         $total = $cart['sub_total'] + $cart['shipping'] - $cart['discount'];
     } else {
@@ -141,4 +166,60 @@ function calculateTotalAmount($cart) {
     }
 
     return $total;
+}
+
+function updateCardPaymentDetails($details, $order_number)
+{
+    var_dump($details);
+    var_dump($order_number);
+    exit;
+    try {
+        global $conn;
+        $conn->query('UPDATE orders 
+                            SET payment_method = '. $details['payment_option'] . ', 
+                                card_number = '.$details['card_number'] .', 
+                                card_holder = '. $details['card_holder_name'].',
+                                fort_id = '. $details['fort_id'].'
+                                WHERE order_number = "' . $order_number . '"');
+        return true;
+    } catch (Exception $ex) {
+        var_dump($ex->getMessage());
+        exit;
+        return false;
+    }
+}
+
+/**
+ * [cartAddOns]
+ * @param  $cart_id
+ * @return cartAddOnsItems
+ */
+function cartAddOns($cart_id) {
+    global $conn;
+    $cart_items = [];
+    $cartAddOns = $conn->query("
+        SELECT ca.*, ao.`image`, ao.`title`, ao.`stock_status`, ao.`products`
+        FROM `cart_addons` ca
+        INNER JOIN add_ons ao ON ca.`addon_id` = ao.`id`
+        WHERE ca.cart_id =" . $cart_id
+    );
+
+    while ($addOn = $cartAddOns->fetch_assoc()) {
+        $item = new \stdClass();
+        $item->item_description = "";
+        $item->item_name = $addOn['title'];
+        $item->item_sku = $addOn['addon_id'];
+        $images = $addOn['image'];
+        $item->item_image = !is_null($images) ?: json_decode($addOn['images'])[0];
+        $item->item_price = $addOn['unit_price'];
+        $item->item_quantity = $addOn['quantity'];
+        $cart_items[] = $item;
+
+        /*echo '<pre>';
+        print_r($cart_items);
+        exit;*/
+
+    }
+
+    return $cart_items;
 }

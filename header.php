@@ -15,8 +15,8 @@
             <div style="padding:10px; text-align: center; font-size: 24px;">
 
                 <h3>
-                    <a href="https://tunerstop.com/">
-                        <img src="https://tunerstop.com/assets/img/logo.png" />
+                    <a href="https://wheel.ahmadhassan.tech/">
+                        <img src="https://wheel.ahmadhassan.tech/assets/img/logo.png" />
                     </a>
                 </h3>
             </div>

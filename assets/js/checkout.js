@@ -1,6 +1,6 @@
-function getPaymentPage(paymentMethod, order_number) {
+function getPaymentPage(paymentMethod, order_number, paymentType) {
     var check3ds = getUrlParameter('3ds');
-    var url = 'route.php?r=getPaymentPage&order_number=' + order_number;
+    var url = 'route.php?r=getPaymentPage&order_number=' + order_number + '&paymentType=' + paymentType;
     if(check3ds == 'no') {
        url = url+'&3ds=no'; 
     }
