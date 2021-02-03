@@ -10,7 +10,12 @@ require_once 'PayfortIntegration.php';
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
 $session_id = NULL;
+$billingDetail = '';
 if (isset($_GET['session_id']) && $_GET['order_number']) {
+
+    echo '<pre>';
+    print_r($_GET);
+    echo '</pre>'
     session_start();
     $cart = getCart($_GET['order_number']);
     $session_id = $_GET['session_id'];
