@@ -100,10 +100,10 @@ function confirm_order() {
 
         // exit;
         sendEmail(getOrderId());
-        unset($_SESSION['paymentType']);
-        unset($_SESSION['amount']);
-        unset($_SESSION['order_number']);
-        unset($_SESSION['session_id']);
+        // unset($_SESSION['paymentType']);
+        // unset($_SESSION['amount']);
+        // unset($_SESSION['order_number']);
+        // unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
         // echo '<pre>'; print_r($ex); exit;
@@ -139,9 +139,14 @@ function sendEmail($order_id) {
     $response = curl_exec($curl);
 
     curl_close($curl);
+
+
+    unset($_SESSION['paymentType']);
+    unset($_SESSION['amount']);
+    unset($_SESSION['order_number']);
+    unset($_SESSION['session_id']);
+
     echo $response;
-
-
     // var_dump($response->getBody());
 }
 
