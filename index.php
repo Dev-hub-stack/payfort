@@ -15,7 +15,7 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
 
     echo '<pre>';
     print_r($_GET);
-    echo '</pre>'
+    echo '</pre>';
     session_start();
     $cart = getCart($_GET['order_number']);
     $session_id = $_GET['session_id'];
