@@ -141,10 +141,7 @@ function sendEmail($order_id) {
     curl_close($curl);
 
 
-    unset($_SESSION['paymentType']);
-    unset($_SESSION['amount']);
-    unset($_SESSION['order_number']);
-    unset($_SESSION['session_id']);
+    
 
     echo $response;
     // var_dump($response->getBody());
