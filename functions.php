@@ -93,12 +93,12 @@ function confirm_order() {
                                 fort_id = "'. $fort_id .'"
                     WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
-        echo 'OrderId: 'getOrderId();
-        echo '<br/>';
-        echo '<pre>';
-        print_r($_SESSION);
+        // echo 'OrderId: 'getOrderId();
+        // echo '<br/>';
+        // echo '<pre>';
+        // print_r($_SESSION);
 
-        exit;
+        // exit;
         sendEmail(getOrderId());
         unset($_SESSION['paymentType']);
         unset($_SESSION['amount']);
@@ -106,7 +106,7 @@ function confirm_order() {
         unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
-        echo '<pre>'; print_r($ex); exit;
+        // echo '<pre>'; print_r($ex); exit;
         return false;
     }
 }
