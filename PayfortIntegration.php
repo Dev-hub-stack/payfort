@@ -193,7 +193,7 @@ class PayfortIntegration
         $fortParams = array_merge($_GET, $_POST);
         
         $debugMsg = "Fort Redirect Response Parameters \n".print_r($fortParams, 1);
-       // $this->log($debugMsg);
+        // $this->log('1 -> '.$debugMsg);
 
         $reason        = '';
         $response_code = '';
@@ -202,7 +202,7 @@ class PayfortIntegration
             $success = false;
             $reason = "Invalid Response Parameters";
             $debugMsg = $reason;
-         //   $this->log($debugMsg);
+            // $this->log('2 -> '.$debugMsg);
         }
         else{
             //validate payfort response
@@ -220,7 +220,7 @@ class PayfortIntegration
                 $success = false;
                 $reason  = 'Invalid signature.';
                 $debugMsg = sprintf('Invalid Signature. Calculated Signature: %1s, Response Signature: %2s', $responseSignature, $calculatedSignature);
-              //  $this->log($debugMsg);
+                // $this->log('3 -> '.$debugMsg);
             }
             else {
                 $response_code    = $params['response_code'];
@@ -230,7 +230,7 @@ class PayfortIntegration
                     $success = false;
                     $reason  = $response_message;
                     $debugMsg = $reason;
-                 //   $this->log($debugMsg);
+                    // $this->log('4 -> '.$debugMsg);
                 }
             }
         }
@@ -240,10 +240,17 @@ class PayfortIntegration
             $return_url = $this->getUrl('error.php?'.http_build_query($p));
         }
         else{
+            
             $return_url = $this->getUrl('success.php?'.http_build_query($params));
-//            $return_url = WEB_URL . '/thank-you';
+            // $return_url = WEB_URL . '/thank-you';
         }
+        // $this->log('5 -> '.$return_url);
+        unset($_SESSION['paymentType']);
+        unset($_SESSION['amount']);
+        unset($_SESSION['order_number']);
+        unset($_SESSION['session_id']);
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
+
         exit;
     }
 
@@ -281,7 +288,7 @@ class PayfortIntegration
                 $success = false;
                 $reason  = 'Invalid signature.';
                 $debugMsg = sprintf('Invalid Signature. Calculated Signature: %1s, Response Signature: %2s', $responseSignature, $calculatedSignature);
-             //   $this->log($debugMsg);
+                // $this->log('1 -> '.$debugMsg);
             }
             else {
                 $response_code    = $params['response_code'];
@@ -291,21 +298,23 @@ class PayfortIntegration
                     $success = false;
                     $reason  = $response_message;
                     $debugMsg = $reason;
-                  //  $this->log($debugMsg);
+                    // $this->log('2 -> '.$debugMsg);
                 }
                 else {
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
-                  //  $this->log($debugMsg);
+                    $this->log('3 -> '.$debugMsg);
                     if (!$host2HostParams) {
                         $success = false;
                         $reason  = 'Invalid response parameters.';
                         $debugMsg = $reason;
-                     //   $this->log($debugMsg);
+                        // $this->log('4 -> '.$debugMsg);
                     }
                     else {
                         $params    = $host2HostParams;
+
+                        // $this->log('8 -> '.print_r($params,1));
                         
                         $responseSignature = $host2HostParams['signature'];
                         $merchantReference = $params['merchant_reference'];
@@ -318,14 +327,14 @@ class PayfortIntegration
                             $success = false;
                             $reason  = 'Invalid signature.';
                             $debugMsg = sprintf('Invalid Signature. Calculated Signature: %1s, Response Signature: %2s', $responseSignature, $calculatedSignature);
-                         //   $this->log($debugMsg);
+                            // $this->log('5 -> '.$debugMsg);
                         }
                         else {
                             $response_code = $params['response_code'];
                             if ($response_code == '20064' && isset($params['3ds_url'])) {
                                 $success = true;
                                 $debugMsg = 'Redirect to 3DS URL : '.$params['3ds_url'];
-                             //   $this->log($debugMsg);
+                                // $this->log('6 -> '.$debugMsg);
                                 echo "<html><body onLoad=\"javascript: window.top.location.href='" . $params['3ds_url'] . "'\"></body></html>";
                                 exit;
                                 //header('location:'.$params['3ds_url']);
@@ -335,7 +344,7 @@ class PayfortIntegration
                                     $success = false;
                                     $reason  = $host2HostParams['response_message'];
                                     $debugMsg = $reason;
-                                //    $this->log($debugMsg);
+                                    // $this->log('7 -> '.$debugMsg);
                                 }
                             }
                         }
