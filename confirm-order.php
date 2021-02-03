@@ -8,12 +8,25 @@ require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
 require_once 'functions.php';
 $objFort = new PayfortIntegration();
-session_start();
-$_SESSION['paymentType'] = $_GET['paymentType'];
-$cart = getCart($_SESSION['order_number']);
-if(is_null($cart)) {
-    echo 'Cart not found';
-    exit;
+if(isset($_GET['session_id'])) {
+    session_start();
+    $cart = getCart($_SESSION['order_number']);
+    $objFort->session_id = $_GET['session_id'];
+    if(is_null($cart)) {
+        echo 'Cart not found';
+        exit;
+    }
+    $user = getUserBilling($_SESSION['order_number']);
+    if(!empty($user)){
+        $objFort->customerEmail = $user['email'];
+    }
+    $objFort->amount = calculateTotalAmount($cart);
+    $_SESSION['amount'] = $objFort->amount;
+    $cartItems = setCartItems($cart['id']);
+  $cartAddon = getCartAddon($cart['id']);
+  $objFort->items = $cartItems;
+  $objFort->addons = $cartAddon;
+
 }
 $user = getUserBilling($_SESSION['order_number']);
 if(!empty($user)){
@@ -25,8 +38,8 @@ $cartItems = setCartItems($cart['id']);
 $objFort->items = $cartItems;
 
 // Code Added By Haseeb for addOns -- Start
-$cartAddOnItems = cartAddOns($cart['id']);
-$objFort->addonItems = $cartAddOnItems;
+//$cartAddOnItems = cartAddOns($cart['id']);
+//$objFort->addonItems = $cartAddOnItems;
 // Code Added By Haseeb for addOns -- End
 
 $amount =  $objFort->amount;
@@ -72,19 +85,17 @@ $paymentMethod = $_REQUEST['payment_method'];
                                 <td><?= $objFort->currency . ' ' .$item->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
-
-                        <!-- Code Added By Haseeb for addOns -- Start -->
-                        <?php foreach ($objFort->addonItems as $addonItem) :
-                            ?>
-                            <tr>
-                                <td><?= $addonItem->item_name; ?></td>
-                                <td><?= $addonItem->item_quantity; ?></td>
-                                <td><?= $objFort->currency . ' ' . $addonItem->item_price; ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                        <!-- Code Added By Haseeb for addOns -- End -->
+                      <?php foreach ($objFort->addons as $item) :
+                        ?>
+                          <tr>
+                              <td><?= $item->item_name; ?></td>
+                              <td><?= $item->item_quantity; ?></td>
+                              <td><?= $objFort->currency . ' ' . $item->total_price; ?></td>
+                          </tr>
+                      <?php endforeach; ?>
 
 
+                       
                         <tr>
                             <td colspan="3" style="text-align: right">
                                 <strong>Sub

@@ -30,10 +30,12 @@ if (isset($_GET['session_id']) && $_GET['order_number']) {
     $objFort->amount = calculateTotalAmount($cart);
     $_SESSION['amount'] = $objFort->convertFortAmount($objFort->amount, $objFort->currency);
     $cartItems = setCartItems($cart['id']);
+    $cartAddon = getCartAddon($cart['id']);
     $objFort->items = $cartItems;
-
+    $objFort->addons = $cartAddon;
     $cartAddOnItems = cartAddOns($cart['id']);
     $objFort->addonItems = $cartAddOnItems;
+
 }
 $amount = $objFort->amount;
 $currency = $objFort->currency;
@@ -74,7 +76,6 @@ $totalAmount = $amount;
                                 <td><?= $objFort->currency . ' ' . $item->item_price; ?></td>
                             </tr>
                         <?php endforeach; ?>
-
                         <?php foreach ($objFort->addonItems as $addonItem) :
                             ?>
                             <tr>
@@ -352,7 +353,7 @@ if($billingDetail['country'] == 'UAE'):
                     return;
                 }
                 if (paymentMethod == 'cc_merchantpage' || paymentMethod == 'installments_merchantpage') {
-                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType
+                    window.location.href = 'confirm-order.php?payment_method=' + paymentMethod + '&order_number=<?= $orderNumber; ?>&paymentType=' + paymentType+ '&session_id=<?= $_GET['session_id']; ?>'
                 }
 
                 if (paymentMethod == 'cc_merchantpage2') {
