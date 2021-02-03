@@ -304,7 +304,7 @@ class PayfortIntegration
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
-                    $this->log('3 -> '.$debugMsg);
+                    // $this->log('3 -> '.$debugMsg);
                     if (!$host2HostParams) {
                         $success = false;
                         $reason  = 'Invalid response parameters.';
