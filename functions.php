@@ -64,6 +64,8 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
+    $mes = "Session: ".print_r($_SESSION, 1);
+    displayLog($mes);
     session_start();
     $session_id = $_SESSION['session_id'];
     $order_number = $_SESSION['order_number'];
@@ -220,15 +222,15 @@ function cartAddOns($cart_id) {
     return $cart_items;
 }
  function displayLog($messages) {
-        $messages = "========================================================\n\n".$messages."\n\n";
-        $file = __DIR__.'/custom.log';
-        if (filesize($file) > 907200) {
-            $fp = fopen($file, "r+");
-            ftruncate($fp, 0);
-            fclose($fp);
-        }
-
-        $myfile = fopen($file, "a+");
-        fwrite($myfile, $messages);
-        fclose($myfile);
+    $messages = "========================================================\n\n".$messages."\n\n";
+    $file = __DIR__.'/custom.log';
+    if (filesize($file) > 907200) {
+        $fp = fopen($file, "r+");
+        ftruncate($fp, 0);
+        fclose($fp);
     }
+
+    $myfile = fopen($file, "a+");
+    fwrite($myfile, $messages);
+    fclose($myfile);
+}
