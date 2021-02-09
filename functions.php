@@ -146,6 +146,9 @@ function sendEmail($order_id) {
 
     curl_close($curl);
     echo $response;
+
+    $mes = "Session: ".print_r($_SESSION, 1);
+        displayLog($mes);
     // var_dump($response->getBody());
 }
 
