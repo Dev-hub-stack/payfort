@@ -93,17 +93,8 @@ function confirm_order() {
                                 fort_id = "'. $fort_id .'"
                     WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
-        // echo 'OrderId: 'getOrderId();
-        // echo '<br/>';
-        // echo '<pre>';
-        // print_r($_SESSION);
-
-        // exit;
+        
         sendEmail(getOrderId());
-        // unset($_SESSION['paymentType']);
-        // unset($_SESSION['amount']);
-        // unset($_SESSION['order_number']);
-        // unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
         // echo '<pre>'; print_r($ex); exit;
@@ -111,12 +102,23 @@ function confirm_order() {
     }
 }
 
-function getOrderId() {
-    //session_start();
+/**
+ * [getOrderId description]
+ * @param  integer $removeSession [Added By M.Haseeb and pass 1 at the end of completion so that remove all Session data]
+ */
+
+function getOrderId( $removeSession = 0) {
+    session_start();
     $order_number = $_SESSION['order_number'];
     global $conn;
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
     $row = $order->fetch_assoc();
+    if($removeSession === 1) {
+        unset($_SESSION['paymentType']);
+        unset($_SESSION['amount']);
+        unset($_SESSION['order_number']);
+        unset($_SESSION['session_id']);
+    }
     return $row['id'];
 }
 
@@ -139,10 +141,6 @@ function sendEmail($order_id) {
     $response = curl_exec($curl);
 
     curl_close($curl);
-
-
-    
-
     echo $response;
     // var_dump($response->getBody());
 }
