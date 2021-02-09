@@ -82,8 +82,8 @@ function confirm_order() {
         $paid_amount = $_SESSION['amount'];
     }
     try {
-        $mes = "Session: ".print_r($_SESSION, 1);
-        displayLog($mes);
+        // $mes = "Session: ".print_r($_SESSION, 1);
+        // displayLog($mes);
 
         $conn->query('UPDATE orders SET status = 1,
                                 payment_method = "'. $paymentMethod . '", 
@@ -99,8 +99,8 @@ function confirm_order() {
         sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
-        $message = "Exception: ".print_r($ex, 1);
-        displayLog($message);
+        // $message = "Exception: ".print_r($ex, 1);
+        // displayLog($message);
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }
