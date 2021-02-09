@@ -2,7 +2,7 @@
 
 //define('BASE_PATH', '/payfort-payment');
 
-define('BASE_PATH', 'http://payfort-payment.test');
+define('BASE_PATH', '/');
 define('GATEWAY_HOST', 'https://checkout.payfort.com/');
 define('GATEWAY_SANDBOX_HOST', 'https://sbcheckout.payfort.com/');
 define('MERCHANT_IDENTIFIER', 'ceef86d7');
@@ -26,8 +26,8 @@ define('PAYFORT_SHA_RESPONSE_PHRASE', '$2y$10$RF7WRs3TN');
 define('CURRENCY', 'AED');
 
 define('SANDBOX_MODE', true);
-define('WEB_URL', 'http://localhost:4200/');
-define('API_URL', 'http://ts.test/api');
+define('WEB_URL', 'https://wheel.ahmadhassan.tech/');
+define('API_URL', 'https://ahmadhassan.tech/api');
 
 //define('API_URL', 'http://localhost:8000/api');
 //define('WEB_URL', 'http://localhost:4200/');
@@ -37,9 +37,7 @@ define('API_URL', 'http://ts.test/api');
 define('HOST', 'localhost');
 define('USER', 'root');
 define('DB', 'tuner');
-define('PASSWORD', '');
-// define('PASSWORD', 'kePFut#3!0Lux$');
-
+define('PASSWORD', 'kePFut#3!0Lux$');
 //define('USER', 'root');
 //define('DB', 'tuner_stop');
 //define('PASSWORD', '4slash1234');
