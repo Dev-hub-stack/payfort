@@ -64,8 +64,7 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
-    $mes = "Session: ".print_r($_SESSION, 1);
-    displayLog($mes);
+    
     session_start();
     $session_id = $_SESSION['session_id'];
     $order_number = $_SESSION['order_number'];
@@ -84,8 +83,7 @@ function confirm_order() {
         $paid_amount = $_SESSION['amount'];
     }
     try {
-        $mes = "Session: ".print_r($_SESSION, 1);
-        displayLog($mes);
+        
 
         $conn->query('UPDATE orders SET status = 1,
                                 payment_method = "'. $paymentMethod . '", 
@@ -130,6 +128,9 @@ function getOrderId( $removeSession = 0) {
 
 function sendEmail($order_id) {
 
+    $mes = "Session: ".print_r($_SESSION, 1);
+    displayLog($mes);
+
     $url = API_URL . '/send-order-email';
 
     $curl = curl_init();
@@ -148,9 +149,6 @@ function sendEmail($order_id) {
 
     curl_close($curl);
     echo $response;
-
-    $mes = "Session: ".print_r($_SESSION, 1);
-        displayLog($mes);
     // var_dump($response->getBody());
 }
 
