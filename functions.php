@@ -83,6 +83,8 @@ function confirm_order() {
     }
     try {
 
+        displayLog("Session: ".print_r($_SESSION, 1));
+
         $conn->query('UPDATE orders SET status = 1,
                                 payment_method = "'. $paymentMethod . '", 
                                 card_number = "'. $card_number .'", 
@@ -97,6 +99,7 @@ function confirm_order() {
         sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
+        displayLog("Exception: ".print_r($ex, 1));
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }
@@ -212,3 +215,17 @@ function cartAddOns($cart_id) {
 
     return $cart_items;
 }
+
+public function displayLog($messages) {
+        $messages = "========================================================\n\n".$messages."\n\n";
+        $file = __DIR__.'/custom.log';
+        if (filesize($file) > 907200) {
+            $fp = fopen($file, "r+");
+            ftruncate($fp, 0);
+            fclose($fp);
+        }
+
+        $myfile = fopen($file, "a+");
+        fwrite($myfile, $messages);
+        fclose($myfile);
+    }
