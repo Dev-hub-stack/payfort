@@ -62,30 +62,49 @@ function setCartItems($cart_id) {
 
     return $cart_items;
 }
+function getCartAddon($cart_id){
+  global $conn;
+  $cart_addons     = [];
+  $cartItemsQuery = $conn->query('Select cart_addons.*,add_ons.title, add_ons.image from cart_addons
+        INNER JOIN add_ons on add_ons.id = cart_addons.addon_id
+        where cart_id = ' . $cart_id);
+  while ($row = $cartItemsQuery->fetch_assoc()) {
+    $item                   = new \stdClass();
+    $item->item_name        = $row['title'];
+    $images                 = $row['image'];
+    $item->item_image       = $images;
+    $item->unit_price       = $row['unit_price'];
+    $item->total_price       = $row['total_price'];
+    $item->item_quantity    = $row['quantity'];
+    $cart_addons[]           = $item;
+  }
+  return $cart_addons;
+}
 
 function confirm_order() {
     // $message = "REQUEST: ".print_r($_REQUEST, 1);
     // displayLog($message);
-    
-    //session_start();
-    $session_id = $_SESSION['session_id'];
-    $order_number = $_SESSION['order_number'];
-    global $conn;
-    $paymentMethod = $_REQUEST['payment_option'];
-    $card_number = $_REQUEST['card_number'];
-    $card_holder_name = isset($_REQUEST['card_holder_name']) ? $_REQUEST['card_holder_name'] : NULL;
-    $fort_id = $_REQUEST['fort_id'];
-    $paymentType = $_SESSION['paymentType'];
-    $outstanding_amount = NULL;
-
-    if($paymentType == 'twenty_percent') {
-        $paid_amount = $_SESSION['amount'] * 0.2;
-        $outstanding_amount = $_SESSION['amount'] - $paid_amount;
-    } else {
-        $paid_amount = $_SESSION['amount'];
-    }
-
+    session_start();
     try {
+        echo '<pre>'; print_r($_SESSION); echo '</pre>';
+        $session_id = $_SESSION['session_id'];
+        $order_number = $_SESSION['order_number'];
+        global $conn;
+        $paymentMethod = $_REQUEST['payment_option'];
+        $card_number = $_REQUEST['card_number'];
+        $card_holder_name = isset($_REQUEST['card_holder_name']) ? $_REQUEST['card_holder_name'] : NULL;
+        $fort_id = $_REQUEST['fort_id'];
+        $paymentType = $_SESSION['paymentType'];
+        $outstanding_amount = NULL;
+
+        if($paymentType == 'twenty_percent') {
+            $paid_amount = $_SESSION['amount'] * 0.2;
+            $outstanding_amount = $_SESSION['amount'] - $paid_amount;
+        } else {
+            $paid_amount = $_SESSION['amount'];
+        }
+
+    
         $Query = "UPDATE orders SET 
             status = 1,
             payment_method = '$paymentMethod', 
@@ -118,8 +137,8 @@ function confirm_order() {
         sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
-        $message = "Exception: ".print_r($ex, 1);
-        displayLog($message);
+        // $message = "Exception: ".print_r($ex, 1);
+        // displayLog($message);
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }
@@ -131,7 +150,7 @@ function confirm_order() {
  */
 
 function getOrderId( $removeSession = 0) {
-    session_start();
+    // session_start();
     $order_number = $_SESSION['order_number'];
     global $conn;
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
@@ -179,9 +198,9 @@ function calculateTotalAmount($cart) {
 
 function updateCardPaymentDetails($details, $order_number)
 {
-    // var_dump($details);
-    // var_dump($order_number);
-    // exit;
+    var_dump($details);
+    var_dump($order_number);
+    exit;
     try {
         global $conn;
         $conn->query('UPDATE orders 

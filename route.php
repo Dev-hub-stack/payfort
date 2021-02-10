@@ -43,8 +43,8 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
     $objFort->processMerchantPageResponse();
 }
 elseif($_REQUEST['r'] == 'processResponse') {
-    confirm_order();
-    exit("Order Confirm");
+    // confirm_order();
+    // exit("Order Confirm");
     
     // unset($_SESSION['paymentType']);
     // unset($_SESSION['amount']);
