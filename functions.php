@@ -64,12 +64,10 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
-    // $message = "GET: ".print_r($_GET, 1);
-    // $message .= "POST: ".print_r($_POST, 1);
-    $message = "REQUEST: ".print_r($_REQUEST, 1);
-    displayLog($message);
+    // $message = "REQUEST: ".print_r($_REQUEST, 1);
+    // displayLog($message);
     
-    session_start();
+    //session_start();
     $session_id = $_SESSION['session_id'];
     $order_number = $_SESSION['order_number'];
     global $conn;
@@ -99,7 +97,7 @@ function confirm_order() {
             fort_id = '$fort_id'
             WHERE session_id = '$session_id' AND order_number = '$order_number'";
         displayLog("Query : ".$Query);
-        
+
         $conn->query("
             UPDATE orders SET 
             status = 1,
@@ -114,15 +112,7 @@ function confirm_order() {
         ");
 
 
-        // $conn->query('UPDATE orders SET status = 1,
-        //                         payment_method = "'. $paymentMethod . '", 
-        //                         card_number = "'. $card_number .'", 
-        //                         card_holder = "'. $card_holder_name .'",
-        //                         payment_type = "'. $paymentType .'",
-        //                         paid_amount = '. $paid_amount .',
-        //                         outstanding_amount = '. $outstanding_amount .',
-        //                         fort_id = "'. $fort_id .'"
-        //             WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         
         sendEmail(getOrderId());
@@ -146,19 +136,13 @@ function getOrderId( $removeSession = 0) {
     global $conn;
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
     $row = $order->fetch_assoc();
-    if($removeSession === 1) {
-        unset($_SESSION['paymentType']);
-        unset($_SESSION['amount']);
-        unset($_SESSION['order_number']);
-        unset($_SESSION['session_id']);
-    }
     return $row['id'];
 }
 
 function sendEmail($order_id) {
 
-    $mes = "Session: ".print_r($_SESSION, 1);
-    displayLog($mes);
+    // $mes = "Session: ".print_r($_SESSION, 1);
+    // displayLog($mes);
 
     $url = API_URL . '/send-order-email';
 

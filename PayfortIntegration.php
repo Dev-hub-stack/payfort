@@ -245,10 +245,7 @@ class PayfortIntegration
             // $return_url = WEB_URL . '/thank-you';
         }
         // $this->log('5 -> '.$return_url);
-        // unset($_SESSION['paymentType']);
-        // unset($_SESSION['amount']);
-        // unset($_SESSION['order_number']);
-        // unset($_SESSION['session_id']);
+        
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
 
         exit;
