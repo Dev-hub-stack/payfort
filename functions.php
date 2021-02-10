@@ -64,19 +64,19 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
-    $message = "GET: ".print_r($_GET, 1);
-    $message .= "POST: ".print_r($_POST, 1);
-    $message .= "REQUEST: ".print_r($_REQUEST, 1);
-    displayLog($message);
+    // $message = "GET: ".print_r($_GET, 1);
+    // $message .= "POST: ".print_r($_POST, 1);
+    // $message .= "REQUEST: ".print_r($_REQUEST, 1);
+    // displayLog($message);
     
     session_start();
     $session_id = $_SESSION['session_id'];
     $order_number = $_SESSION['order_number'];
     global $conn;
-    $paymentMethod = $_GET['payment_option'];
-    $card_number = $_GET['card_number'];
-    $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
-    $fort_id = $_GET['fort_id'];
+    $paymentMethod = $_REQUEST['payment_option'];
+    $card_number = $_REQUEST['card_number'];
+    $card_holder_name = isset($_REQUEST['card_holder_name']) ? $_REQUEST['card_holder_name'] : NULL;
+    $fort_id = $_REQUEST['fort_id'];
     $paymentType = $_SESSION['paymentType'];
     $outstanding_amount = NULL;
 
@@ -103,8 +103,8 @@ function confirm_order() {
         sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
-        $message = "Exception: ".print_r($ex, 1);
-        displayLog($message);
+        // $message = "Exception: ".print_r($ex, 1);
+        // displayLog($message);
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }

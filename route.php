@@ -44,10 +44,10 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
 }
 elseif($_REQUEST['r'] == 'processResponse') {
 
-    $message = " processResponse GET: ".print_r($_GET, 1);
-    $message .= " processResponse POST: ".print_r($_POST, 1);
-    $message .= " processResponse REQUEST: ".print_r($_REQUEST, 1);
-    displayLog($message);
+    // $message = " processResponse GET: ".print_r($_GET, 1);
+    // $message .= " processResponse POST: ".print_r($_POST, 1);
+    // $message .= " processResponse REQUEST: ".print_r($_REQUEST, 1);
+    // displayLog($message);
     $objFort->processResponse();
 }
 else{
