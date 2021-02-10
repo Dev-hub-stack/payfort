@@ -86,25 +86,50 @@ function confirm_order() {
     } else {
         $paid_amount = $_SESSION['amount'];
     }
-    try {
-        
 
-        $conn->query('UPDATE orders SET status = 1,
-                                payment_method = "'. $paymentMethod . '", 
-                                card_number = "'. $card_number .'", 
-                                card_holder = "'. $card_holder_name .'",
-                                payment_type = "'. $paymentType .'",
-                                paid_amount = '. $paid_amount .',
-                                outstanding_amount = '. $outstanding_amount .',
-                                fort_id = "'. $fort_id .'"
-                    WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+    try {
+        $Query = "UPDATE orders SET 
+            status = 1,
+            payment_method = '$paymentMethod', 
+            card_number = '$card_number', 
+            card_holder = '$card_holder_name',
+            payment_type = '$paymentType',
+            paid_amount = $paid_amount,
+            outstanding_amount = $outstanding_amount,
+            fort_id = '$fort_id'
+            WHERE session_id = '$session_id' AND order_number = '$order_number'";
+        displayLog("Query : ".$Query);
+        
+        $conn->query("
+            UPDATE orders SET 
+            status = 1,
+            payment_method = '$paymentMethod', 
+            card_number = '$card_number', 
+            card_holder = '$card_holder_name',
+            payment_type = '$paymentType',
+            paid_amount = $paid_amount,
+            outstanding_amount = $outstanding_amount,
+            fort_id = '$fort_id'
+            WHERE session_id = '$session_id' AND order_number = '$order_number'
+        ");
+
+
+        // $conn->query('UPDATE orders SET status = 1,
+        //                         payment_method = "'. $paymentMethod . '", 
+        //                         card_number = "'. $card_number .'", 
+        //                         card_holder = "'. $card_holder_name .'",
+        //                         payment_type = "'. $paymentType .'",
+        //                         paid_amount = '. $paid_amount .',
+        //                         outstanding_amount = '. $outstanding_amount .',
+        //                         fort_id = "'. $fort_id .'"
+        //             WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         
         sendEmail(getOrderId());
         return true;
     } catch (Exception $ex) {
-        // $message = "Exception: ".print_r($ex, 1);
-        // displayLog($message);
+        $message = "Exception: ".print_r($ex, 1);
+        displayLog($message);
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }

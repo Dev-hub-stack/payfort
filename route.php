@@ -43,9 +43,8 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
     $objFort->processMerchantPageResponse();
 }
 elseif($_REQUEST['r'] == 'processResponse') {
-    $message = "processResponse REQUEST: ".print_r($_REQUEST, 1);
-    displayLog($message);
-
+    confirm_order();
+    exit("Order Confirm");
     // $message = " processResponse GET: ".print_r($_GET, 1);
     // $message .= " processResponse POST: ".print_r($_POST, 1);
     // $message .= " processResponse REQUEST: ".print_r($_REQUEST, 1);
