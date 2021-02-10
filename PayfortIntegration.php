@@ -543,7 +543,8 @@ class PayfortIntegration
     public function getUrl($path)
     {
         $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-        $url = $scheme . $_SERVER['HTTP_HOST'] . $this->projectUrlPath .'/'. $path;
+        $endpoints = str_replace("//","/",$this->projectUrlPath .'/'. $path);
+        $url = $scheme . $_SERVER['HTTP_HOST'] . $endpoints;
         return $url;
     }
 

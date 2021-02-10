@@ -64,6 +64,10 @@ function setCartItems($cart_id) {
 }
 
 function confirm_order() {
+    $message = "GET: ".print_r($_GET, 1);
+    $message .= "POST: ".print_r($_POST, 1);
+    $message .= "REQUEST: ".print_r($_REQUEST, 1);
+    displayLog($message);
     
     session_start();
     $session_id = $_SESSION['session_id'];
