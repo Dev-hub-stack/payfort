@@ -9,7 +9,7 @@ if(!isset($_REQUEST['r'])) {
 }
 require_once 'PayfortIntegration.php';
 $objFort = new PayfortIntegration();
-include './functions.php';
+require_once 'functions.php';
 
 if($_REQUEST['r'] == 'getPaymentPage') {
     $cart = getCart($_REQUEST['order_number']);
@@ -43,6 +43,14 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
     $objFort->processMerchantPageResponse();
 }
 elseif($_REQUEST['r'] == 'processResponse') {
+    // confirm_order();
+    // exit("Order Confirm");
+    
+    // unset($_SESSION['paymentType']);
+    // unset($_SESSION['amount']);
+    // unset($_SESSION['order_number']);
+    // unset($_SESSION['session_id']);
+    
     $objFort->processResponse();
 }
 else{

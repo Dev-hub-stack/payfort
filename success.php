@@ -6,7 +6,7 @@ if(!confirm_order()) {
     echo "<script>window.location.href='https://tunerstop.com/cancel-order';</script>";
     exit;
 } else {
-    $orderId = getOrderId();
+    $orderId = getOrderId($removeAllSession = 1);
     header('Location: ' . WEB_URL . '/thank-you?order_id=' . $orderId);
 }
 ?>

@@ -245,10 +245,7 @@ class PayfortIntegration
             // $return_url = WEB_URL . '/thank-you';
         }
         // $this->log('5 -> '.$return_url);
-        unset($_SESSION['paymentType']);
-        unset($_SESSION['amount']);
-        unset($_SESSION['order_number']);
-        unset($_SESSION['session_id']);
+        
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
 
         exit;
@@ -304,7 +301,7 @@ class PayfortIntegration
                     $success         = true;
                     $host2HostParams = $this->merchantPageNotifyFort($fortParams);
                     $debugMsg = "Fort Merchant Page Host2Hots Response Parameters \n".print_r($fortParams, 1);
-                    $this->log('3 -> '.$debugMsg);
+                    // $this->log('3 -> '.$debugMsg);
                     if (!$host2HostParams) {
                         $success = false;
                         $reason  = 'Invalid response parameters.';
@@ -543,7 +540,8 @@ class PayfortIntegration
     public function getUrl($path)
     {
         $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-        $url = $scheme . $_SERVER['HTTP_HOST'] . $this->projectUrlPath .'/'. $path;
+        $endpoints = str_replace("//","/",$this->projectUrlPath .'/'. $path);
+        $url = $scheme . $_SERVER['HTTP_HOST'] . $endpoints;
         return $url;
     }
 

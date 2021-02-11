@@ -82,55 +82,75 @@ function getCartAddon($cart_id){
 }
 
 function confirm_order() {
+    // $message = "REQUEST: ".print_r($_REQUEST, 1);
+    // displayLog($message);
     session_start();
-    $session_id = $_SESSION['session_id'];
-    $order_number = $_SESSION['order_number'];
-    global $conn;
-    $paymentMethod = $_GET['payment_option'];
-    $card_number = $_GET['card_number'];
-    $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
-    $fort_id = $_GET['fort_id'];
-    $paymentType = $_SESSION['paymentType'];
-    $outstanding_amount = NULL;
-
-    if($paymentType == 'twenty_percent') {
-        $paid_amount = $_SESSION['amount'] * 0.2;
-        $outstanding_amount = $_SESSION['amount'] - $paid_amount;
-    } else {
-        $paid_amount = $_SESSION['amount'];
-    }
     try {
+        echo '<pre>'; print_r($_SESSION); echo '</pre>';
+        $session_id = $_SESSION['session_id'];
+        $order_number = $_SESSION['order_number'];
+        global $conn;
+        $paymentMethod = $_REQUEST['payment_option'];
+        $card_number = $_REQUEST['card_number'];
+        $card_holder_name = isset($_REQUEST['card_holder_name']) ? $_REQUEST['card_holder_name'] : NULL;
+        $fort_id = $_REQUEST['fort_id'];
+        $paymentType = $_SESSION['paymentType'];
+        $outstanding_amount = NULL;
 
-        $conn->query('UPDATE orders SET status = 1,
-                                payment_method = "'. $paymentMethod . '", 
-                                card_number = "'. $card_number .'", 
-                                card_holder = "'. $card_holder_name .'",
-                                payment_type = "'. $paymentType .'",
-                                paid_amount = '. $paid_amount .',
-                                outstanding_amount = '. $outstanding_amount .',
-                                fort_id = "'. $fort_id .'"
-                    WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+        if($paymentType == 'twenty_percent') {
+            $paid_amount = $_SESSION['amount'] * 0.2;
+            $outstanding_amount = $_SESSION['amount'] - $paid_amount;
+        } else {
+            $paid_amount = $_SESSION['amount'];
+        }
+
+    
+        $Query = "UPDATE orders SET 
+            status = 1,
+            payment_method = '$paymentMethod', 
+            card_number = '$card_number', 
+            card_holder = '$card_holder_name',
+            payment_type = '$paymentType',
+            paid_amount = $paid_amount,
+            outstanding_amount = $outstanding_amount,
+            fort_id = '$fort_id'
+            WHERE session_id = '$session_id' AND order_number = '$order_number'";
+        displayLog("Query : ".$Query);
+
+        $conn->query("
+            UPDATE orders SET 
+            status = 1,
+            payment_method = '$paymentMethod', 
+            card_number = '$card_number', 
+            card_holder = '$card_holder_name',
+            payment_type = '$paymentType',
+            paid_amount = $paid_amount,
+            outstanding_amount = $outstanding_amount,
+            fort_id = '$fort_id'
+            WHERE session_id = '$session_id' AND order_number = '$order_number'
+        ");
+
+
+        
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
-        // echo 'OrderId: 'getOrderId();
-        // echo '<br/>';
-        // echo '<pre>';
-        // print_r($_SESSION);
-
-        // exit;
+        
         sendEmail(getOrderId());
-        // unset($_SESSION['paymentType']);
-        // unset($_SESSION['amount']);
-        // unset($_SESSION['order_number']);
-        // unset($_SESSION['session_id']);
         return true;
     } catch (Exception $ex) {
+        // $message = "Exception: ".print_r($ex, 1);
+        // displayLog($message);
         // echo '<pre>'; print_r($ex); exit;
         return false;
     }
 }
 
-function getOrderId() {
-    //session_start();
+/**
+ * [getOrderId description]
+ * @param  integer $removeSession [Added By M.Haseeb and pass 1 at the end of completion so that remove all Session data]
+ */
+
+function getOrderId( $removeSession = 0) {
+    // session_start();
     $order_number = $_SESSION['order_number'];
     global $conn;
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
@@ -139,6 +159,9 @@ function getOrderId() {
 }
 
 function sendEmail($order_id) {
+
+    // $mes = "Session: ".print_r($_SESSION, 1);
+    // displayLog($mes);
 
     $url = API_URL . '/send-order-email';
 
@@ -157,10 +180,6 @@ function sendEmail($order_id) {
     $response = curl_exec($curl);
 
     curl_close($curl);
-
-
-    
-
     echo $response;
     // var_dump($response->getBody());
 }
@@ -231,4 +250,17 @@ function cartAddOns($cart_id) {
     }
 
     return $cart_items;
+}
+ function displayLog($messages) {
+    $messages = "========================================================\n\n".$messages."\n\n";
+    $file = __DIR__.'/custom.log';
+    if (filesize($file) > 907200) {
+        $fp = fopen($file, "r+");
+        ftruncate($fp, 0);
+        fclose($fp);
+    }
+
+    $myfile = fopen($file, "a+");
+    fwrite($myfile, $messages);
+    fclose($myfile);
 }

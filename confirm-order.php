@@ -46,6 +46,7 @@ $amount =  $objFort->amount;
 $currency = $objFort->currency;
 $totalAmount = $amount;
 $paymentMethod = $_REQUEST['payment_method'];
+$_SESSION['paymentType'] = $_GET['paymentType'];
 ?>
 
     <section class="nav">
