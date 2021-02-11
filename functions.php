@@ -86,7 +86,6 @@ function confirm_order() {
     // displayLog($message);
     session_start();
     try {
-        echo '<pre>'; print_r($_SESSION); echo '</pre>';
         $session_id = $_SESSION['session_id'];
         $order_number = $_SESSION['order_number'];
         global $conn;
@@ -96,8 +95,9 @@ function confirm_order() {
         $fort_id = $_REQUEST['fort_id'];
         $paymentType = $_SESSION['paymentType'];
         $outstanding_amount = NULL;
-
+        $status = 1;
         if($paymentType == 'twenty_percent') {
+            $status = 5;
             $paid_amount = $_SESSION['amount'] * 0.2;
             $outstanding_amount = $_SESSION['amount'] - $paid_amount;
         } else {
@@ -105,27 +105,30 @@ function confirm_order() {
         }
 
     
-        $Query = "UPDATE orders SET 
-            status = 1,
-            payment_method = '$paymentMethod', 
-            card_number = '$card_number', 
-            card_holder = '$card_holder_name',
-            payment_type = '$paymentType',
-            paid_amount = $paid_amount,
-            outstanding_amount = $outstanding_amount,
-            fort_id = '$fort_id'
-            WHERE session_id = '$session_id' AND order_number = '$order_number'";
-        displayLog("Query : ".$Query);
+        // echo '<pre>'; print_r($_SESSION);
+        // $Query = "UPDATE orders SET 
+        //     status = $status,
+        //     payment_method = '$paymentMethod', 
+        //     card_number = '$card_number', 
+        //     card_holder = '$card_holder_name',
+        //     payment_type = '$paymentType',
+        //     paid_amount = $paid_amount,
+        //     outstanding_amount = '$outstanding_amount',
+        //     fort_id = '$fort_id'
+        //     WHERE session_id = '$session_id' AND order_number = '$order_number'";
+        // echo $Query;
+        // displayLog("Query : ".$Query);
+        // exit;
 
         $conn->query("
             UPDATE orders SET 
-            status = 1,
+            status = $status,
             payment_method = '$paymentMethod', 
             card_number = '$card_number', 
             card_holder = '$card_holder_name',
             payment_type = '$paymentType',
-            paid_amount = $paid_amount,
-            outstanding_amount = $outstanding_amount,
+            paid_amount = '$paid_amount',
+            outstanding_amount = '$outstanding_amount',
             fort_id = '$fort_id'
             WHERE session_id = '$session_id' AND order_number = '$order_number'
         ");
@@ -135,6 +138,7 @@ function confirm_order() {
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         
         sendEmail(getOrderId());
+        // exit;
         return true;
     } catch (Exception $ex) {
         // $message = "Exception: ".print_r($ex, 1);
