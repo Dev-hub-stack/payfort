@@ -90,8 +90,11 @@ function confirm_order() {
     $card_number = $_GET['card_number'];
     $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
     $fort_id = $_GET['fort_id'];
-    $paymentType = $_SESSION['paymentType'];
-    $outstanding_amount = NULL;
+   // $paymentType = $_SESSION['paymentType'];
+  //this is encrypted payment_type
+    $paymentType = decrypt($_GET['payfort_id']);
+    ///$paymentType = $_GET['payment_type'];
+    $outstanding_amount = 0;
 
     if($paymentType == 'twenty_percent') {
         $paid_amount = $_SESSION['amount'] * 0.2;
@@ -100,16 +103,16 @@ function confirm_order() {
         $paid_amount = $_SESSION['amount'];
     }
     try {
-
-        $conn->query('UPDATE orders SET status = 1,
-                                payment_method = "'. $paymentMethod . '", 
-                                card_number = "'. $card_number .'", 
+$query = 'UPDATE orders SET status = 1,
+                                payment_method = "'. $paymentMethod . '",
+                                card_number = "'. $card_number .'",
                                 card_holder = "'. $card_holder_name .'",
                                 payment_type = "'. $paymentType .'",
                                 paid_amount = '. $paid_amount .',
                                 outstanding_amount = '. $outstanding_amount .',
                                 fort_id = "'. $fort_id .'"
-                    WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
+                    WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"';
+        $result = $conn->query($query);
         $conn->query('DELETE from cart WHERE session_id = "' . $session_id . '" AND order_number = "' . $order_number . '"');
         // echo 'OrderId: 'getOrderId();
         // echo '<br/>';
@@ -232,3 +235,37 @@ function cartAddOns($cart_id) {
 
     return $cart_items;
 }
+  
+  function encrypt($data, $password='ts0102AH'){
+    $iv = substr(sha1(mt_rand()), 0, 16);
+    $password = sha1($password);
+    
+    $salt = sha1(mt_rand());
+    $saltWithPassword = hash('sha256', $password.$salt);
+    
+    $encrypted = openssl_encrypt(
+      "$data", 'aes-256-cbc', "$saltWithPassword", null, $iv
+    );
+    $msg_encrypted_bundle = "$iv:$salt:$encrypted";
+    return $msg_encrypted_bundle;
+  }
+  
+  
+  function decrypt($msg_encrypted_bundle, $password='ts0102AH'){
+    $password = sha1($password);
+    
+    $components = explode( ':', $msg_encrypted_bundle );
+    $iv            = $components[0];
+    $salt          = hash('sha256', $password.$components[1]);
+    $encrypted_msg = $components[2];
+    
+    $decrypted_msg = openssl_decrypt(
+      $encrypted_msg, 'aes-256-cbc', $salt, null, $iv
+    );
+    
+    if ( $decrypted_msg === false )
+      return false;
+    
+    $msg = substr( $decrypted_msg, 41 );
+    return $decrypted_msg;
+  }

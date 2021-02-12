@@ -25,6 +25,7 @@ if($_REQUEST['r'] == 'getPaymentPage') {
 
 
     $objFort->orderNumber = $_REQUEST['order_number'];
+    $objFort->paymentType = $_REQUEST['paymentType'];
     $objFort->processRequest(htmlspecialchars($_REQUEST['paymentMethod'], ENT_QUOTES, 'UTF-8'), $_REQUEST['order_number'], $_GET['paymentType']);
 }
 elseif($_REQUEST['r'] == 'merchantPageReturn') {
@@ -40,6 +41,7 @@ elseif($_REQUEST['r'] == 'merchantPageReturn') {
     }
 
     $objFort->orderNumber = $_REQUEST['order_number'];
+    $objFort->paymentType = $_REQUEST['paymentType'];
     $objFort->processMerchantPageResponse();
 }
 elseif($_REQUEST['r'] == 'processResponse') {

@@ -75,6 +75,8 @@ class PayfortIntegration
     public $projectUrlPath     = BASE_PATH;
 
     public $name = 'John';
+    public $orderNumber = '';
+    public $paymentType = '';
 
     public function __construct()
     {
@@ -120,7 +122,9 @@ class PayfortIntegration
             //'customer_name'         => trim($order_info['b_firstname'].' '.$order_info['b_lastname']),
             'command'             => $this->command,
             'language'            => $this->language,
-            'return_url'          => $this->getUrl('route.php?r=processResponse'),
+            'return_url'          => $this->getUrl('route.php?r=processResponse&order_number='.$this->orderNumber.'&payment_type='.$this->paymentType),
+          //  'merchant_extra'=>$this->orderNumber,
+         //   'merchant_extra1'=>$this->paymentType
         );
 
 
@@ -137,7 +141,7 @@ class PayfortIntegration
         }
         $postData['signature'] = $this->calculateSignature($postData, 'request');
         $debugMsg = "Fort Redirect Request Parameters \n".print_r($postData, 1);
-      //  $this->log($debugMsg);
+        $this->log('getRedirectionData---->'.$debugMsg);
         return array('url' => $gatewayUrl, 'params' => $postData);
     }
     
@@ -193,7 +197,7 @@ class PayfortIntegration
         $fortParams = array_merge($_GET, $_POST);
         
         $debugMsg = "Fort Redirect Response Parameters \n".print_r($fortParams, 1);
-        // $this->log('1 -> '.$debugMsg);
+         $this->log('Process Response -> '.$debugMsg);
 
         $reason        = '';
         $response_code = '';
@@ -212,6 +216,8 @@ class PayfortIntegration
             unset($params['r']);
             unset($params['signature']);
             unset($params['integration_type']);
+            unset($params['order_number']);
+            unset($params['payment_type']);
             $calculatedSignature = $this->calculateSignature($params, 'response');
             $success       = true;
             $reason        = '';
@@ -240,15 +246,17 @@ class PayfortIntegration
             $return_url = $this->getUrl('error.php?'.http_build_query($p));
         }
         else{
-            
-            $return_url = $this->getUrl('success.php?'.http_build_query($params));
+            $payment_type = $fortParams['payment_type'];
+            unset($fortParams['payment_type']);
+            $fortParams['payfort_id'] = encrypt($payment_type);
+            $return_url = $this->getUrl('success.php?'.http_build_query($fortParams));
             // $return_url = WEB_URL . '/thank-you';
         }
         // $this->log('5 -> '.$return_url);
-        unset($_SESSION['paymentType']);
-        unset($_SESSION['amount']);
-        unset($_SESSION['order_number']);
-        unset($_SESSION['session_id']);
+       // unset($_SESSION['paymentType']);
+       // unset($_SESSION['amount']);
+       // unset($_SESSION['order_number']);
+      //  unset($_SESSION['session_id']);
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
 
         exit;
@@ -259,7 +267,7 @@ class PayfortIntegration
         $fortParams = array_merge($_GET, $_POST);
 
         $debugMsg = "Fort Merchant Page Response Parameters \n".print_r($fortParams, 1);
-      //  $this->log($debugMsg);
+        $this->log('processMerchantPageResponse --->'.$debugMsg);
         $reason = '';
         $response_code = '';
         $success = true;
@@ -387,7 +395,9 @@ class PayfortIntegration
             'customer_name'       => $this->name,
             'token_name'          => $fortParams['token_name'],
             'language'            => $this->language,
-            'return_url'          => $this->getUrl('route.php?r=processResponse'),
+            'return_url'          => $this->getUrl('route.php?r=processResponse&order_number='.$this->orderNumber.'&payment_type='.$this->paymentType),
+          //  'merchant_extra'=>$this->orderNumber,
+            //'merchant_extra1'=>$this->paymentType
         );
 
         
@@ -543,7 +553,7 @@ class PayfortIntegration
     public function getUrl($path)
     {
         $scheme = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? 'https://' : 'http://';
-        $url = $scheme . $_SERVER['HTTP_HOST'] . $this->projectUrlPath .'/'. $path;
+        $url = $scheme . $_SERVER['HTTP_HOST'] . $this->projectUrlPath . $path;
         return $url;
     }
 
