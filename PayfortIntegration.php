@@ -248,15 +248,11 @@ class PayfortIntegration
         else{
             $payment_type = $fortParams['payment_type'];
             unset($fortParams['payment_type']);
-            $fortParams['payfort_id'] = encrypt($payment_type);
+            $fortParams['payfort_id_type'] = encrypt($payment_type);
             $return_url = $this->getUrl('success.php?'.http_build_query($fortParams));
             // $return_url = WEB_URL . '/thank-you';
         }
         // $this->log('5 -> '.$return_url);
-       // unset($_SESSION['paymentType']);
-       // unset($_SESSION['amount']);
-       // unset($_SESSION['order_number']);
-      //  unset($_SESSION['session_id']);
         echo "<html><body onLoad=\"javascript: window.top.location.href='" . $return_url . "'\"></body></html>";
 
         exit;
