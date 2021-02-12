@@ -96,18 +96,33 @@
     $card_number      = $_GET['card_number'];
     $card_holder_name = isset($_GET['card_holder_name']) ? $_GET['card_holder_name'] : NULL;
     $fort_id          = $_GET['fort_id'];
+    $paid_amount = $_REQUEST['amount'];
+    $paid_amount = $paid_amount / 100;
+    $order = getOrderDetail($order_number);
+    if($order['total'] == $paid_amount){
+      $paymentType = 'full';
+    }else{
+      $paymentType = 'twenty_percent';
+    }
     // $paymentType = $_SESSION['paymentType'];
     //this is encrypted payment_type
-    $paymentType = decrypt($_GET['payfort_id_type']);
+    //$options = decrypt($_REQUEST['options']);
+    //parse_str($options, $output);
+  // $paymentType = decrypt($_REQUEST['payfort_id_type']);
+   /* if(isset($output['payment_type'])){
+      $paymentType = $output['payment_type'];
+    }else{
+      $paymentType = $_SESSION['paymentType'];
+    }*/
     ///$paymentType = $_GET['payment_type'];
     $outstanding_amount = 0;
     $status             = 1;
-    if ($paymentType == 'twenty_percent') {
+    if ($paymentType == 'full') {
+      $paid_amount = $_SESSION['amount'];
+    } else {
       $status             = 5;
       $paid_amount        = $_SESSION['amount'] * 0.2;
       $outstanding_amount = $_SESSION['amount'] - $paid_amount;
-    } else {
-      $paid_amount = $_SESSION['amount'];
     }
     try {
       $query  = 'UPDATE orders SET status = "'.$status.'",
@@ -147,6 +162,14 @@
     $order = $conn->query('SELECT id FROM orders where order_number ="' . $order_number . '"');
     $row   = $order->fetch_assoc();
     return $row['id'];
+  }
+  function getOrderDetail($order_number)
+  {
+    //session_start();
+    global $conn;
+    $order = $conn->query('SELECT * FROM orders where order_number ="' . $order_number . '"');
+    $row   = $order->fetch_assoc();
+    return $row;
   }
   
   function sendEmail($order_id)
